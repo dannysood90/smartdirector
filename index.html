@@ -371,33 +371,6 @@
       }
     }
 
-    // Control VAT UI enabling/greying based on "Price includes VAT" + VAT applies
-    function updateVatControls() {
-      const priceIncludesVatEl = document.getElementById("priceIncludesVat");
-      const vatRateEl = document.getElementById("vatRate");
-      const vatOnEl = document.getElementById("vatOn");
-      const vatOnRow = vatOnEl.parentElement;
-
-      const includes = priceIncludesVatEl.checked;
-
-      if (!includes) {
-        // Treat as "no VAT context": disable and untick VAT
-        vatOnEl.checked = false;
-        vatOnEl.disabled = true;
-        vatRateEl.disabled = true;
-
-        vatRateEl.style.opacity = "0.5";
-        if (vatOnRow) vatOnRow.style.opacity = "0.5";
-      } else {
-        // VAT can apply: enable controls, but VAT rate follows vatOn
-        vatOnEl.disabled = false;
-        vatRateEl.disabled = !vatOnEl.checked;
-
-        vatRateEl.style.opacity = "1";
-        if (vatOnRow) vatOnRow.style.opacity = "1";
-      }
-    }
-
     function setDefaults() {
       document.getElementById("price").value = 1000;
       document.getElementById("priceIncludesVat").checked = true;
@@ -408,7 +381,6 @@
       populatePersonalTaxRates("dividend");
       document.getElementById("employeeNiRate").value = "0.08";
       updateNiVisibility("dividend");
-      updateVatControls();
     }
 
     function calculate() {
@@ -428,16 +400,18 @@
       let netPrice;
       let grossPriceForPersonal;
 
-      if (vatOn && vatRate > 0 && priceIncludesVat) {
-        // Price is VAT-inclusive: company sees net cost = price / (1+vat)
-        netPrice = priceInput / (1 + vatRate);
-        grossPriceForPersonal = priceInput; // director pays the sticker price
-      } else if (vatOn && vatRate > 0 && !priceIncludesVat) {
-        // (We now treat this as "no VAT context" because priceIncludesVat off disables VAT)
-        netPrice = priceInput;
-        grossPriceForPersonal = priceInput;
+      if (vatOn && vatRate > 0) {
+        if (priceIncludesVat) {
+          // Price is VAT-inclusive: company sees net cost = price / (1+vat)
+          netPrice = priceInput / (1 + vatRate);
+          grossPriceForPersonal = priceInput; // director pays the sticker price
+        } else {
+          // Price is ex-VAT: company net cost = price; director pays price + VAT
+          netPrice = priceInput;
+          grossPriceForPersonal = priceInput * (1 + vatRate);
+        }
       } else {
-        // No VAT reclaimed / VAT not applicable
+        // No VAT to reclaim / ignore VAT
         netPrice = priceInput;
         grossPriceForPersonal = priceInput;
       }
@@ -477,8 +451,7 @@
 
           breakdownText =
             `Includes ${formatMoney(corpTax)} in Corporation Tax and ` +
-            `${formatMoney(dividendTax)} in dividend tax to leave you with ` +
-            `${formatMoney(personalSpend)} to spend personally.`;
+            `${formatMoney(dividendTax)} in dividend tax `;
         }
       } else {
         const denom = 1 - personalTaxRate - employeeNiRate;
@@ -499,8 +472,7 @@
           breakdownText =
             `Includes ${formatMoney(incomeTax)} in income tax, ` +
             `${formatMoney(employeeNI)} in employee NI and ` +
-            `${formatMoney(employerNI)} in employer NI to leave you with ` +
-            `${formatMoney(personalSpend)} to spend personally.`;
+            `${formatMoney(employerNI)} in employer NI to leave you with `;
         }
       }
 
@@ -520,11 +492,10 @@
       companyCostEl.textContent = formatMoney(companyCost);
 
       let vatText;
-      if (vatOn && vatRate > 0 && priceIncludesVat) {
-        vatText = `Assumes VAT at ${formatPercent(vatRate)} is reclaimed from a VAT-inclusive price. `;
-      } else if (vatOn && vatRate > 0 && !priceIncludesVat) {
-        // This branch shouldn't normally happen now, but keep text simple
-        vatText = "Price entered excludes VAT; VAT controls are disabled so VAT is ignored in this scenario. ";
+      if (vatOn && vatRate > 0) {
+        vatText = priceIncludesVat
+          ? `Assumes VAT at ${formatPercent(vatRate)} is reclaimed from a VAT-inclusive price. `
+          : `Assumes VAT at ${formatPercent(vatRate)} is reclaimed on top of the net price. `;
       } else {
         vatText = "No VAT reclaimed or VAT not applicable. ";
       }
@@ -581,14 +552,8 @@
     });
 
     // Disable VAT rate dropdown when VAT is off
-    document.getElementById("vatOn").addEventListener("change", () => {
-      updateVatControls();
-      calculate();
-    });
-
-    // When "Price includes VAT" changes, update VAT UX + logic
-    document.getElementById("priceIncludesVat").addEventListener("change", () => {
-      updateVatControls();
+    document.getElementById("vatOn").addEventListener("change", (e) => {
+      document.getElementById("vatRate").disabled = !e.target.checked;
       calculate();
     });
 
