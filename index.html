@@ -266,22 +266,27 @@
     }
 
     function populatePersonalTaxRates(extractionType) {
-      const select = document.getElementById("personalTaxRate");
-      select.innerHTML = ""; // clear existing options
+  const select = document.getElementById("personalTaxRate");
+  select.innerHTML = ""; // clear existing options
 
-      const rates = extractionType === "dividend" ? dividendRates : salaryRates;
+  const rates = extractionType === "dividend" ? dividendRates : salaryRates;
 
-      rates.forEach((rate, index) => {
-        const opt = document.createElement("option");
-        opt.value = rate.value;
-        opt.textContent = rate.label;
-        // default to the middle option; here we default to higher-rate
-        if (index === 1) {
-          opt.selected = true;
-        }
-        select.appendChild(opt);
-      });
+  rates.forEach((rate, index) => {
+    const opt = document.createElement("option");
+    opt.value = rate.value;
+    opt.textContent = rate.label;
+
+    // Default selection
+    if (extractionType === "salary" && index === 0) {
+      opt.selected = true; // 20%
     }
+    if (extractionType === "dividend" && index === 1) {
+      opt.selected = true; // 33.75%
+    }
+
+    select.appendChild(opt);
+  });
+}
 
     function updateNiVisibility(extractionType) {
       const niField = document.getElementById("employeeNiField");
