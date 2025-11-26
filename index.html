@@ -298,12 +298,6 @@
         </div>
 
         <div class="result-card">
-          <div class="result-title">If you buy it personally</div>
-          <div class="result-value" id="personalCost">£–</div>
-          <div class="result-sub" id="personalDetails"></div>
-        </div>
-
-        <div class="result-card">
           <div class="result-title">Saving by using the company</div>
           <div class="result-value" id="savingAmount">£–</div>
           <div class="result-sub" id="savingDetails"></div>
@@ -423,13 +417,13 @@
         }
       } else {
         // No VAT to reclaim / ignore VAT
-        netPrice = priceIncludesVat ? priceInput : priceInput;
+        netPrice = priceInput;
         grossPriceForPersonal = priceInput;
       }
 
       const companyCost = netPrice * (1 - corpTaxRate);
 
-      // PERSONAL COST:
+      // PERSONAL ROUTE:
       // For personal route, we use the gross amount the director must spend.
       const personalSpend = grossPriceForPersonal;
 
@@ -466,8 +460,6 @@
       // Update UI
       const companyCostEl = document.getElementById("companyCost");
       const companyDetailsEl = document.getElementById("companyDetails");
-      const personalCostEl = document.getElementById("personalCost");
-      const personalDetailsEl = document.getElementById("personalDetails");
       const savingAmountEl = document.getElementById("savingAmount");
       const savingDetailsEl = document.getElementById("savingDetails");
       const resultsSummaryEl = document.getElementById("resultsSummary");
@@ -488,24 +480,6 @@
       let corpText = `Corporation Tax relief at ${formatPercent(corpTaxRate)} on the net cost.`;
 
       companyDetailsEl.textContent = vatText + corpText;
-
-      personalCostEl.textContent = formatMoney(personalCost);
-
-      const extractionLabel = extractionType === "dividend" ? "dividends" : "salary";
-
-      if (extractionType === "dividend") {
-        personalDetailsEl.textContent =
-          `Assumes the company earns profit, pays Corporation Tax at ` +
-          `${formatPercent(corpTaxRate)}, then pays ${extractionLabel} ` +
-          `taxed at ${formatPercent(personalTaxRate)} to give you ` +
-          `${formatMoney(personalSpend)} to spend.`;
-      } else {
-        personalDetailsEl.textContent =
-          `Assumes the ${formatMoney(personalSpend)} is taken as ${extractionLabel} ` +
-          `taxed at ${formatPercent(personalTaxRate)} plus employee NI of ` +
-          `${formatPercent(employeeNiRate)}, with employer NI of ` +
-          `${formatPercent(EMPLOYER_NI_RATE)} included in the company cost.`;
-      }
 
       savingAmountEl.textContent = formatMoney(saving);
       savingAmountEl.classList.remove("saving-positive", "saving-negative");
@@ -529,14 +503,15 @@
         resultsSummaryEl.classList.add("negative");
       } else {
         savingDetailsEl.textContent = "No meaningful difference between the two options.";
-        resultsSummaryEl.textContent = "There’s very little difference between company and personal in this scenario.";
+        resultsSummaryEl.textContent =
+          "There’s very little difference between company and personal in this scenario.";
       }
 
       // Company profit needed (personal route)
       profitNeededEl.textContent = formatMoney(personalCost);
       profitDetailsEl.textContent =
         `Your company would need to generate about ${formatMoney(personalCost)} in profit ` +
-        `to fund this purchase personally under these assumptions.`;
+        `to give you ${formatMoney(personalSpend)} to spend personally under these assumptions.`;
 
       // Warning text
       if (warningText) {
