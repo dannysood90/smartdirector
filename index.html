@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Company vs Personal Purchase Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.4;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f5f7;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 24px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px 24px;
+      margin-bottom: 1.5rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.9rem;
+    }
+
+    label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    input[type="number"],
+    select {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccd0d5;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      background: #fff;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #1f7ae0;
+      box-shadow: 0 0 0 2px rgba(31,122,224,0.15);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .checkbox-row label {
+      font-weight: 500;
+    }
+
+    .muted {
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .result-card {
+      padding: 16px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e1e6ee;
+    }
+
+    .result-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    .result-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .result-sub {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .saving-positive {
+      color: #1a7f37;
+    }
+
+    .saving-negative {
+      color: #b3261e;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Company vs Personal Purchase Calculator</h1>
+      <p class="subtitle">
+        Compare the effective cost of buying something through your limited company
+        versus taking the money personally (via dividends or salary).
+      </p>
+
+      <div class="grid">
+        <div class="field">
+          <label for="price">Item price (VAT-inclusive)</label>
+          <input id="price" type="number" min="0" step="0.01" value="1775" />
+          <span class="muted">Enter the total price you’d pay at the till.</span>
+        </div>
+
+        <div class="field">
+          <label for="corpTaxRate">Corporation Tax rate</label>
+          <select id="corpTaxRate">
+            <option value="0.19">19%</option>
+            <option value="0.20" selected>20%</option>
+            <option value="0.25">25%</option>
+          </select>
+          <span class="muted">Used for company tax relief and dividend calculations.</span>
+        </div>
+
+        <div class="field">
+          <label>VAT</label>
+          <div class="checkbox-row">
+            <input type="checkbox" id="vatOn" checked />
+            <label for="vatOn">VAT applies and can be reclaimed</label>
+          </div>
+          <select id="vatRate" style="margin-top: 6px;">
+            <option value="0.20" selected>20% (standard)</option>
+            <option value="0.05">5%</option>
+            <option value="0.00">0% (zero-rated)</option>
+          </select>
+          <span class="muted">Untick if there’s no VAT to reclaim.</span>
+        </div>
+
+        <div class="field">
+          <label for="extractionType">How do you take the money personally?</label>
+          <select id="extractionType">
+            <option value="dividend" selected>Dividends</option>
+            <option value="salary">Salary</option>
+          </select>
+          <span class="muted">This controls how personal and company taxes are applied.</span>
+        </div>
+
+        <div class="field">
+          <label for="personalTaxRate">Personal tax rate on that income</label>
+          <select id="personalTaxRate">
+            <optgroup label="Dividend tax rates">
+              <option value="0.0875">8.75% (basic-rate dividends)</option>
+              <option value="0.3375" selected>33.75% (higher-rate dividends)</option>
+              <option value="0.3935">39.35% (additional-rate dividends)</option>
+            </optgroup>
+            <optgroup label="Salary / income tax rates">
+              <option value="0.20">20% (basic-rate salary)</option>
+              <option value="0.40">40% (higher-rate salary)</option>
+              <option value="0.45">45% (additional-rate salary)</option>
+            </optgroup>
+          </select>
+          <span class="muted">
+            This is your marginal tax rate on extra dividends/salary.
+          </span>
+        </div>
+      </div>
+
+      <div class="results">
+        <div class="result-card">
+          <div class="result-title">If the company buys it</div>
+          <div class="result-value" id="companyCost">£–</div>
+          <div class="result-sub" id="companyDetails"></div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-title">If you buy it personally</div>
+          <div class="result-value" id="personalCost">£–</div>
+          <div class="result-sub" id="personalDetails"></div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-title">Saving by using the company</div>
+          <div class="result-value" id="savingAmount">£–</div>
+          <div class="result-sub" id="savingDetails"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatMoney(value) {
+      if (!isFinite(value)) return "£–";
+      return "£" + value.toFixed(2);
+    }
+
+    function formatPercent(value) {
+      if (!isFinite(value)) return "–%";
+      return (value * 100).toFixed(1) + "%";
+    }
+
+    function calculate() {
+      const price = parseFloat(document.getElementById("price").value) || 0;
+      const corpTaxRate = parseFloat(document.getElementById("corpTaxRate").value) || 0;
+      const vatOn = document.getElementById("vatOn").checked;
+      const vatRate = parseFloat(document.getElementById("vatRate").value) || 0;
+      const extractionType = document.getElementById("extractionType").value;
+      const personalTaxRate = parseFloat(document.getElementById("personalTaxRate").value) || 0;
+
+      // COMPANY COST:
+      // If VAT applies, reclaim VAT and only the net price hits the P&L.
+      // Then apply Corporation Tax relief on that net cost.
+      let netPrice = price;
+      if (vatOn && vatRate > 0) {
+        netPrice = price / (1 + vatRate);
+      }
+
+      const companyCost = netPrice * (1 - corpTaxRate);
+
+      // PERSONAL COST:
+      // For salary: to spend £price personally, company must fund salary taxed at personalTaxRate.
+      // Effective company profit required (ignoring NICs & CT interaction) = price / (1 - personalTaxRate).
+      //
+      // For dividends: company must first pay Corporation Tax, then pay dividends taxed personally.
+      // Required pre-tax company profit:
+      //   profit_needed = price / ((1 - corpTaxRate) * (1 - personalTaxRate))
+      let personalCost;
+      if (extractionType === "dividend") {
+        const denom = (1 - corpTaxRate) * (1 - personalTaxRate);
+        personalCost = denom > 0 ? price / denom : Infinity;
+      } else {
+        const denom = (1 - personalTaxRate);
+        personalCost = denom > 0 ? price / denom : Infinity;
+      }
+
+      const saving = personalCost - companyCost;
+      const savingPercent = personalCost > 0 ? saving / personalCost : 0;
+
+      // Update UI
+      const companyCostEl = document.getElementById("companyCost");
+      const companyDetailsEl = document.getElementById("companyDetails");
+      const personalCostEl = document.getElementById("personalCost");
+      const personalDetailsEl = document.getElementById("personalDetails");
+      const savingAmountEl = document.getElementById("savingAmount");
+      const savingDetailsEl = document.getElementById("savingDetails");
+
+      companyCostEl.textContent = formatMoney(companyCost);
+
+      let vatText = vatOn
+        ? `Assumes VAT rate of ${formatPercent(vatRate)} is reclaimed. `
+        : "No VAT reclaimed. ";
+      let corpText = `Corporation Tax relief at ${formatPercent(corpTaxRate)} on the net cost.`;
+
+      companyDetailsEl.textContent = vatText + corpText;
+
+      personalCostEl.textContent = formatMoney(personalCost);
+
+      const extractionLabel = extractionType === "dividend" ? "dividends" : "salary";
+
+      if (extractionType === "dividend") {
+        personalDetailsEl.textContent =
+          `Assumes the company earns profit, pays Corporation Tax at ` +
+          `${formatPercent(corpTaxRate)}, then pays ${extractionLabel} ` +
+          `taxed at ${formatPercent(personalTaxRate)} to give you £${price.toFixed(2)} net.`;
+      } else {
+        personalDetailsEl.textContent =
+          `Assumes the £${price.toFixed(2)} is taken as ${extractionLabel} ` +
+          `taxed at ${formatPercent(personalTaxRate)} (Corporation Tax ignored on the marginal salary).`;
+      }
+
+      savingAmountEl.textContent = formatMoney(saving);
+      savingAmountEl.classList.remove("saving-positive", "saving-negative");
+
+      if (saving > 0.005) {
+        savingAmountEl.classList.add("saving-positive");
+        savingDetailsEl.textContent =
+          `Using the company is cheaper by ${formatMoney(saving)} ` +
+          `(${(savingPercent * 100).toFixed(1)}% of the personal cost).`;
+      } else if (saving < -0.005) {
+        savingAmountEl.classList.add("saving-negative");
+        savingDetailsEl.textContent =
+          `Using the company is more expensive by ${formatMoney(-saving)} ` +
+          `(${(Math.abs(savingPercent) * 100).toFixed(1)}% more than buying personally).`;
+      } else {
+        savingDetailsEl.textContent = "No meaningful difference between the two options.";
+      }
+    }
+
+    // Recalculate whenever inputs change
+    document.querySelectorAll(
+      "#price, #corpTaxRate, #vatOn, #vatRate, #extractionType, #personalTaxRate"
+    ).forEach(el => {
+      el.addEventListener("input", calculate);
+      el.addEventListener("change", calculate);
+    });
+
+    // Disable VAT rate dropdown when VAT is off
+    document.getElementById("vatOn").addEventListener("change", (e) => {
+      document.getElementById("vatRate").disabled = !e.target.checked;
+      calculate();
+    });
+
+    // Initial run
+    calculate();
+  </script>
+</body>
+</html>
