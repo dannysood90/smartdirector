@@ -195,10 +195,21 @@
 
         <div class="field">
           <label for="personalTaxRate">Personal tax rate on that income</label>
-          <!-- This will be populated dynamically based on extraction type -->
+          <!-- Populated dynamically based on extraction type -->
           <select id="personalTaxRate"></select>
           <span class="muted">
             This is your marginal tax rate on extra dividends/salary.
+          </span>
+        </div>
+
+        <div class="field" id="employeeNiField">
+          <label for="employeeNiRate">Employee NI rate on this extra salary</label>
+          <select id="employeeNiRate">
+            <option value="0.08" selected>8% (between £12,570 and £50,270)</option>
+            <option value="0.02">2% (over £50,270)</option>
+          </select>
+          <span class="muted">
+            Choose the NI band your extra salary falls into. Ignored for dividends.
           </span>
         </div>
       </div>
@@ -226,9 +237,8 @@
   </div>
 
   <script>
-    // Current main marginal NI rates (2025/26) for standard employees
-    const EMPLOYEE_NI_RATE = 0.08;  // 8% main rate
-    const EMPLOYER_NI_RATE = 0.15;  // 15% employer rate
+    // Current main marginal NI rates (2025/26)
+    const EMPLOYER_NI_RATE = 0.15;  // 15% employer Class 1
 
     const dividendRates = [
       { value: 0.0875, label: "8.75% (basic-rate dividends)" },
@@ -270,6 +280,15 @@
       });
     }
 
+    function updateNiVisibility(extractionType) {
+      const niField = document.getElementById("employeeNiField");
+      if (extractionType === "salary") {
+        niField.style.display = "flex";
+      } else {
+        niField.style.display = "none";
+      }
+    }
+
     function calculate() {
       const price = parseFloat(document.getElementById("price").value) || 0;
       const corpTaxRate = parseFloat(document.getElementById("corpTaxRate").value) || 0;
@@ -277,6 +296,9 @@
       const vatRate = parseFloat(document.getElementById("vatRate").value) || 0;
       const extractionType = document.getElementById("extractionType").value;
       const personalTaxRate = parseFloat(document.getElementById("personalTaxRate").value) || 0;
+      const employeeNiRate = extractionType === "salary"
+        ? parseFloat(document.getElementById("employeeNiRate").value) || 0
+        : 0;
 
       // COMPANY COST:
       // If VAT applies, reclaim VAT and only the net price hits the P&L.
@@ -290,19 +312,18 @@
 
       // PERSONAL COST:
       // Dividends: pre-tax profit needed = price / ((1 - CT) * (1 - dividend tax))
-      // Salary: include Income Tax + employee NI and employer NI
+      //
+      // Salary:
       //   Net to director N = S * (1 - incomeTax - employeeNI)
-      //   Company pre-tax cost (after CT effects) = S + employerNI*S = S*(1 + employerNI)
+      //   Company cost (salary + employer NI) = S * (1 + employerNI)
       //   => cost = N * (1 + employerNI) / (1 - incomeTax - employeeNI)
       let personalCost;
       if (extractionType === "dividend") {
         const denom = (1 - corpTaxRate) * (1 - personalTaxRate);
         personalCost = denom > 0 ? price / denom : Infinity;
       } else {
-        const employeeNi = EMPLOYEE_NI_RATE;
-        const employerNi = EMPLOYER_NI_RATE;
-        const denom = 1 - personalTaxRate - employeeNi;
-        personalCost = denom > 0 ? price * (1 + employerNi) / denom : Infinity;
+        const denom = 1 - personalTaxRate - employeeNiRate;
+        personalCost = denom > 0 ? price * (1 + EMPLOYER_NI_RATE) / denom : Infinity;
       }
 
       const saving = personalCost - companyCost;
@@ -338,7 +359,7 @@
         personalDetailsEl.textContent =
           `Assumes the £${price.toFixed(2)} is taken as ${extractionLabel} ` +
           `taxed at ${formatPercent(personalTaxRate)} plus employee NI of ` +
-          `${formatPercent(EMPLOYEE_NI_RATE)}, with employer NI of ` +
+          `${formatPercent(employeeNiRate)}, with employer NI of ` +
           `${formatPercent(EMPLOYER_NI_RATE)} included in the company cost.`;
       }
 
@@ -362,7 +383,7 @@
 
     // Recalculate whenever inputs change
     document.querySelectorAll(
-      "#price, #corpTaxRate, #vatOn, #vatRate, #extractionType, #personalTaxRate"
+      "#price, #corpTaxRate, #vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
     ).forEach(el => {
       el.addEventListener("input", calculate);
       el.addEventListener("change", calculate);
@@ -374,14 +395,17 @@
       calculate();
     });
 
-    // When extraction type changes, repopulate the tax rates accordingly
+    // When extraction type changes, repopulate the tax rates and toggle NI field
     document.getElementById("extractionType").addEventListener("change", (e) => {
-      populatePersonalTaxRates(e.target.value);
+      const type = e.target.value;
+      populatePersonalTaxRates(type);
+      updateNiVisibility(type);
       calculate();
     });
 
     // Initial setup
     populatePersonalTaxRates("dividend");
+    updateNiVisibility("dividend");
     calculate();
   </script>
 </body>
