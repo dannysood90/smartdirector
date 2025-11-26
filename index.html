@@ -451,9 +451,8 @@
           const dividendTax = grossDividend * personalTaxRate;
 
           breakdownText =
-            `Includes about ${formatMoney(corpTax)} in Corporation Tax and ` +
-            `${formatMoney(dividendTax)} in dividend tax to leave you with ` +
-            `${formatMoney(personalSpend)} to spend personally.`;
+            `Includes ${formatMoney(corpTax)} in Corporation Tax and ` +
+            `${formatMoney(dividendTax)} in dividend tax `;
         }
       } else {
         const denom = 1 - personalTaxRate - employeeNiRate;
@@ -472,10 +471,9 @@
           const employerNI = grossSalary * EMPLOYER_NI_RATE;
 
           breakdownText =
-            `Includes about ${formatMoney(incomeTax)} in income tax, ` +
+            `Includes ${formatMoney(incomeTax)} in income tax, ` +
             `${formatMoney(employeeNI)} in employee NI and ` +
-            `${formatMoney(employerNI)} in employer NI to leave you with ` +
-            `${formatMoney(personalSpend)} to spend personally.`;
+            `${formatMoney(employerNI)} in employer NI to leave you with `;
         }
       }
 
