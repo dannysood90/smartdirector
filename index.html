@@ -1,3 +1,11 @@
+Yep, that makes perfect sense – right now the dropdown always shows both salary and dividend tax rates, regardless of what you picked in the “How do you take the money personally?” dropdown.
+
+Below is a fixed version of your page where:
+	•	If you choose Dividends → the tax dropdown only shows dividend tax rates
+	•	If you choose Salary → the tax dropdown only shows salary tax rates
+
+Just replace your current file with this one (or update the <select> + <script> as shown).
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -195,18 +203,8 @@
 
         <div class="field">
           <label for="personalTaxRate">Personal tax rate on that income</label>
-          <select id="personalTaxRate">
-            <optgroup label="Dividend tax rates">
-              <option value="0.0875">8.75% (basic-rate dividends)</option>
-              <option value="0.3375" selected>33.75% (higher-rate dividends)</option>
-              <option value="0.3935">39.35% (additional-rate dividends)</option>
-            </optgroup>
-            <optgroup label="Salary / income tax rates">
-              <option value="0.20">20% (basic-rate salary)</option>
-              <option value="0.40">40% (higher-rate salary)</option>
-              <option value="0.45">45% (additional-rate salary)</option>
-            </optgroup>
-          </select>
+          <!-- This will be populated dynamically based on extraction type -->
+          <select id="personalTaxRate"></select>
           <span class="muted">
             This is your marginal tax rate on extra dividends/salary.
           </span>
@@ -236,6 +234,18 @@
   </div>
 
   <script>
+    const dividendRates = [
+      { value: 0.0875, label: "8.75% (basic-rate dividends)" },
+      { value: 0.3375, label: "33.75% (higher-rate dividends)" },
+      { value: 0.3935, label: "39.35% (additional-rate dividends)" }
+    ];
+
+    const salaryRates = [
+      { value: 0.20, label: "20% (basic-rate salary)" },
+      { value: 0.40, label: "40% (higher-rate salary)" },
+      { value: 0.45, label: "45% (additional-rate salary)" }
+    ];
+
     function formatMoney(value) {
       if (!isFinite(value)) return "£–";
       return "£" + value.toFixed(2);
@@ -244,6 +254,24 @@
     function formatPercent(value) {
       if (!isFinite(value)) return "–%";
       return (value * 100).toFixed(1) + "%";
+    }
+
+    function populatePersonalTaxRates(extractionType) {
+      const select = document.getElementById("personalTaxRate");
+      select.innerHTML = ""; // clear existing options
+
+      const rates = extractionType === "dividend" ? dividendRates : salaryRates;
+
+      rates.forEach((rate, index) => {
+        const opt = document.createElement("option");
+        opt.value = rate.value;
+        opt.textContent = rate.label;
+        // default to the middle option if you like; here we default to higher-rate
+        if (index === 1) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
     }
 
     function calculate() {
@@ -347,8 +375,17 @@
       calculate();
     });
 
-    // Initial run
+    // When extraction type changes, repopulate the tax rates accordingly
+    document.getElementById("extractionType").addEventListener("change", (e) => {
+      populatePersonalTaxRates(e.target.value);
+      calculate();
+    });
+
+    // Initial setup
+    populatePersonalTaxRates("dividend");
     calculate();
   </script>
 </body>
 </html>
+
+If you like, next we can add a little label that dynamically changes to “Dividend tax rate” / “Salary tax rate” when you switch the method, to make it even clearer.
