@@ -1,11 +1,3 @@
-Yep, that makes perfect sense – right now the dropdown always shows both salary and dividend tax rates, regardless of what you picked in the “How do you take the money personally?” dropdown.
-
-Below is a fixed version of your page where:
-	•	If you choose Dividends → the tax dropdown only shows dividend tax rates
-	•	If you choose Salary → the tax dropdown only shows salary tax rates
-
-Just replace your current file with this one (or update the <select> + <script> as shown).
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -387,5 +379,4 @@ Just replace your current file with this one (or update the <select> + <script> 
   </script>
 </body>
 </html>
-
-If you like, next we can add a little label that dynamically changes to “Dividend tax rate” / “Salary tax rate” when you switch the method, to make it even clearer.
+	
