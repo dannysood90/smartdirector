@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Director Purchase Saver</title>
+  <title>SmartDirector: Purchase Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -200,10 +200,9 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>Director Purchase Saver</h1>
+      <h1>SmartDirector© Purchase Calculator</h1>
       <p class="subtitle">
-        Compare the true cost of buying something through your limited company versus buying it personally
-        using money taken as salary or dividends.
+        Compare the real cost of buying something through your limited company versus buying it personally using money withdrawn as salary or dividends (after tax).
       </p>
 
       <div class="controls-header">
@@ -220,7 +219,7 @@
           <div class="checkbox-row">
             <input type="checkbox" id="priceIncludesVat" checked />
             <label for="priceIncludesVat" class="muted">
-              Price includes VAT (what you’d pay at checkout)
+              Price includes VAT
             </label>
           </div>
         </div>
@@ -244,8 +243,6 @@
             <option value="0.00">0% (zero-rated)</option>
           </select>
 
-          <span class="muted">Untick if there’s no VAT to reclaim.</span>
-
           <div class="checkbox-row" style="margin-top: 6px;">
             <input type="checkbox" id="vatOn" checked />
             <label for="vatOn" style="font-size: 0.8rem; font-style: italic;">
@@ -260,15 +257,14 @@
             <option value="dividend" selected>Dividends</option>
             <option value="salary">Salary</option>
           </select>
-          <span class="muted">This controls how personal and company taxes are applied.</span>
         </div>
 
         <div class="field">
-          <label for="personalTaxRate">Tax rate on income used for this purchase</label>
+          <label for="personalTaxRate">Tax Rate</label>
           <!-- Populated dynamically based on extraction type -->
           <select id="personalTaxRate"></select>
           <span class="muted">
-            This is your marginal tax rate on extra dividends/salary.
+            This is your marginal tax rate on dividends/salary used for this purchase.
           </span>
         </div>
 
@@ -282,7 +278,7 @@
             <option value="0.02">2% (over £50,270)</option>
           </select>
           <span class="muted">
-            Select 8% unless your salary (excluding dividends) is over £50,270. Most directors take a salary of around £12,570.
+            Select 8% unless your total salary (not dividends) is over £50,270. Most directors take a salary of around £12,570.
           </span>
         </div>
       </div>
