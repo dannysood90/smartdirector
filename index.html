@@ -512,8 +512,8 @@
       // Company profit needed (personal route)
       profitNeededEl.textContent = formatMoney(personalCost);
       profitDetailsEl.textContent =
-        `Your company would need to generate about ${formatMoney(personalCost)} in profit ` +
-        `to give you ${formatMoney(personalSpend)} to spend personally under these assumptions.`;
+  `It would cost your company ${formatMoney(personalCost)} to give you ${formatMoney(personalSpend)} ` +
+  `in dividends/salary to spend personally under these assumptions.`;
 
       // Warning text
       if (warningText) {
