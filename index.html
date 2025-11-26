@@ -292,25 +292,23 @@
 
       <div class="results">
         <div class="result-card">
-          <div class="result-title">Overall cost if the company buys it</div>
+          <div class="result-title">If the company buys it</div>
           <div class="result-value" id="companyCost">£–</div>
           <div class="result-sub" id="companyDetails"></div>
         </div>
 
         <div class="result-card">
           <div class="result-title">Overall cost if you buy it personally</div>
-          <div class="result-value" id="profitNeeded">£–</div>
-          <div class="result-sub" id="profitDetails"></div>
+          <div class="result-value" id="personalTotal">£–</div>
+          <div class="result-sub" id="personalBreakdown"></div>
         </div>
-      </div>
 
         <div class="result-card">
-          <div class="result-title">Saving by using the company vs personal purchase</div>
+          <div class="result-title">Saving by using the company</div>
           <div class="result-value" id="savingAmount">£–</div>
           <div class="result-sub" id="savingDetails"></div>
         </div>
-
-        
+      </div>
 
       <p class="disclaimer">
         This is a simplified calculator based on marginal UK tax and NI rates. It does not account for all edge cases
@@ -437,6 +435,7 @@
       //   => cost = N * (1 + employerNI) / (1 - incomeTax - employeeNI)
       let personalCost;
       let warningText = "";
+      let breakdownText = "";
 
       if (extractionType === "dividend") {
         const denom = (1 - corpTaxRate) * (1 - personalTaxRate);
@@ -446,6 +445,20 @@
             "Check that the rates reflect your real marginal position.";
         }
         personalCost = denom > 0 ? personalSpend / denom : Infinity;
+
+        // Breakdown for dividends
+        if (denom > 0 && isFinite(personalCost)) {
+          const preTaxProfit = personalCost; // by construction
+          const corpTax = preTaxProfit * corpTaxRate;
+          const postTaxProfit = preTaxProfit - corpTax;
+          const grossDividend = postTaxProfit; // all available is paid as dividend
+          const dividendTax = grossDividend * personalTaxRate;
+
+          breakdownText =
+            `Includes about ${formatMoney(corpTax)} in Corporation Tax and ` +
+            `${formatMoney(dividendTax)} in dividend tax to leave you with ` +
+            `${formatMoney(personalSpend)} to spend personally.`;
+        }
       } else {
         const denom = 1 - personalTaxRate - employeeNiRate;
         if (denom <= 0.05) {
@@ -454,6 +467,20 @@
             "Consider whether dividends or a different structure is more realistic.";
         }
         personalCost = denom > 0 ? personalSpend * (1 + EMPLOYER_NI_RATE) / denom : Infinity;
+
+        // Breakdown for salary
+        if (denom > 0 && isFinite(personalCost)) {
+          const grossSalary = personalSpend / denom;
+          const incomeTax = grossSalary * personalTaxRate;
+          const employeeNI = grossSalary * employeeNiRate;
+          const employerNI = grossSalary * EMPLOYER_NI_RATE;
+
+          breakdownText =
+            `Includes about ${formatMoney(incomeTax)} in income tax, ` +
+            `${formatMoney(employeeNI)} in employee NI and ` +
+            `${formatMoney(employerNI)} in employer NI to leave you with ` +
+            `${formatMoney(personalSpend)} to spend personally.`;
+        }
       }
 
       const saving = personalCost - companyCost;
@@ -462,12 +489,12 @@
       // Update UI
       const companyCostEl = document.getElementById("companyCost");
       const companyDetailsEl = document.getElementById("companyDetails");
+      const personalTotalEl = document.getElementById("personalTotal");
+      const personalBreakdownEl = document.getElementById("personalBreakdown");
       const savingAmountEl = document.getElementById("savingAmount");
       const savingDetailsEl = document.getElementById("savingDetails");
       const resultsSummaryEl = document.getElementById("resultsSummary");
       const warningEl = document.getElementById("warningText");
-      const profitNeededEl = document.getElementById("profitNeeded");
-      const profitDetailsEl = document.getElementById("profitDetails");
 
       companyCostEl.textContent = formatMoney(companyCost);
 
@@ -483,6 +510,11 @@
 
       companyDetailsEl.textContent = vatText + corpText;
 
+      // Overall personal route cost
+      personalTotalEl.textContent = formatMoney(personalCost);
+      personalBreakdownEl.textContent = breakdownText || "";
+
+      // Saving card + summary
       savingAmountEl.textContent = formatMoney(saving);
       savingAmountEl.classList.remove("saving-positive", "saving-negative");
       resultsSummaryEl.classList.remove("negative");
@@ -492,7 +524,7 @@
         savingAmountEl.classList.add("saving-positive");
         savingDetailsEl.textContent =
           `Using the company is cheaper by ${formatMoney(saving)} ` +
-          `(${(savingPercent * 100).toFixed(1)}% of the personal cost).`;
+          `(${(savingPercent * 100).toFixed(1)}% of the overall personal cost).`;
         resultsSummaryEl.textContent =
           `Using your limited company saves you ${formatMoney(saving)} on this purchase.`;
       } else if (saving < -0.005) {
@@ -508,12 +540,6 @@
         resultsSummaryEl.textContent =
           "There’s very little difference between company and personal in this scenario.";
       }
-
-      // Company profit needed (personal route)
-      profitNeededEl.textContent = formatMoney(personalCost);
-      profitDetailsEl.textContent =
-  `It would cost your company ${formatMoney(personalCost)} to give you ${formatMoney(personalSpend)} ` +
-  `in dividends/salary to spend personally under these assumptions.`;
 
       // Warning text
       if (warningText) {
