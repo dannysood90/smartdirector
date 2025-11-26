@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SmartDirector© Purchase Saver</title>
+  <title>Director Purchase Saver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -202,8 +202,8 @@
     <div class="card">
       <h1>Director Purchase Saver</h1>
       <p class="subtitle">
-        Compare the cost of buying an item through your limited company vs buying it personally.
-        It's assumed that you have used your £12,570 tax free allowance.
+        Compare the true cost of buying something through your limited company versus buying it personally
+        using money taken as salary or dividends.
       </p>
 
       <div class="controls-header">
@@ -455,9 +455,9 @@
           const dividendTax = grossDividend * personalTaxRate;
 
           breakdownText =
-            `Includes
-            `${formatMoney(corpTax)} in Corporation Tax and ` +
-            `${formatMoney(dividendTax)} in dividends tax `
+            `Includes about ${formatMoney(corpTax)} in Corporation Tax and ` +
+            `${formatMoney(dividendTax)} in dividend tax to leave you with ` +
+            `${formatMoney(personalSpend)} to spend personally.`;
         }
       } else {
         const denom = 1 - personalTaxRate - employeeNiRate;
