@@ -150,14 +150,14 @@
       <h1>Company vs Personal Purchase Calculator</h1>
       <p class="subtitle">
         A handy tool for directors to compare the true cost of buying something through their
-		limited company versus buying it personally using money taken as salary or dividends.
+        limited company versus buying it personally using money taken as salary or dividends.
       </p>
 
       <div class="grid">
         <div class="field">
           <label for="price">Item price</label>
           <input id="price" type="number" min="0" step="0.01" value="1000" />
-          <span class="muted">Enter the total price you’d pay at checkout</span>
+          <span class="muted">Enter the total price you’d pay at checkout.</span>
         </div>
 
         <div class="field">
@@ -200,6 +200,25 @@
           <span class="muted">
             This is your marginal tax rate on extra dividends/salary.
           </span>
+        </div>
+
+        <div class="field">
+          <label for="employeeNiRate">Employee NI rate (salary only)</label>
+          <select id="employeeNiRate">
+            <option value="0.00">0% (under threshold / not applicable)</option>
+            <option value="0.08">8% (example marginal rate)</option>
+            <option value="0.12" selected>12% (typical main rate)</option>
+          </select>
+          <span class="muted">Only used when salary is selected.</span>
+        </div>
+
+        <div class="field">
+          <label for="employerNiRate">Employer NI rate (salary only)</label>
+          <select id="employerNiRate">
+            <option value="0.00">0% (none)</option>
+            <option value="0.138" selected>13.8% (typical employer NI)</option>
+          </select>
+          <span class="muted">Only used when salary is selected.</span>
         </div>
       </div>
 
@@ -258,12 +277,18 @@
         const opt = document.createElement("option");
         opt.value = rate.value;
         opt.textContent = rate.label;
-        // default to the middle option if you like; here we default to higher-rate
+        // default to the middle option; here we default to higher-rate
         if (index === 1) {
           opt.selected = true;
         }
         select.appendChild(opt);
       });
+    }
+
+    function toggleNiFields(extractionType) {
+      const isSalary = extractionType === "salary";
+      document.getElementById("employeeNiRate").disabled = !isSalary;
+      document.getElementById("employerNiRate").disabled = !isSalary;
     }
 
     function calculate() {
@@ -285,19 +310,25 @@
       const companyCost = netPrice * (1 - corpTaxRate);
 
       // PERSONAL COST:
-      // For salary: to spend £price personally, company must fund salary taxed at personalTaxRate.
-      // Effective company profit required (ignoring NICs & CT interaction) = price / (1 - personalTaxRate).
-      //
-      // For dividends: company must first pay Corporation Tax, then pay dividends taxed personally.
-      // Required pre-tax company profit:
-      //   profit_needed = price / ((1 - corpTaxRate) * (1 - personalTaxRate))
       let personalCost;
       if (extractionType === "dividend") {
+        // For dividends: company must first pay Corporation Tax,
+        // then pay dividends taxed personally.
+        // Required pre-tax company profit:
+        // profit_needed = price / ((1 - corpTaxRate) * (1 - personalTaxRate))
         const denom = (1 - corpTaxRate) * (1 - personalTaxRate);
         personalCost = denom > 0 ? price / denom : Infinity;
       } else {
-        const denom = (1 - personalTaxRate);
-        personalCost = denom > 0 ? price / denom : Infinity;
+        // For salary: include both employee NI and employer NI.
+        const employeeNiRate = parseFloat(document.getElementById("employeeNiRate").value) || 0;
+        const employerNiRate = parseFloat(document.getElementById("employerNiRate").value) || 0;
+
+        // Net to director = G * (1 - incomeTax - employeeNI)
+        // Company cost = G * (1 + employerNI)
+        // => profit_needed_per_£net = (1 + employerNI) / (1 - incomeTax - employeeNI)
+        const denom = 1 - personalTaxRate - employeeNiRate;
+        const multiplier = 1 + employerNiRate;
+        personalCost = denom > 0 ? price * multiplier / denom : Infinity;
       }
 
       const saving = personalCost - companyCost;
@@ -330,9 +361,15 @@
           `${formatPercent(corpTaxRate)}, then pays ${extractionLabel} ` +
           `taxed at ${formatPercent(personalTaxRate)} to give you £${price.toFixed(2)} net.`;
       } else {
+        const employeeNiRate = parseFloat(document.getElementById("employeeNiRate").value) || 0;
+        const employerNiRate = parseFloat(document.getElementById("employerNiRate").value) || 0;
+
         personalDetailsEl.textContent =
-          `Assumes the £${price.toFixed(2)} is taken as ${extractionLabel} ` +
-          `taxed at ${formatPercent(personalTaxRate)} (Corporation Tax ignored on the marginal salary).`;
+          `Assumes the £${price.toFixed(2)} is taken as salary ` +
+          `taxed at ${formatPercent(personalTaxRate)}, plus employee NI at ` +
+          `${formatPercent(employeeNiRate)}, with employer NI at ` +
+          `${formatPercent(employerNiRate)} added to the company cost ` +
+          `(Corporation Tax ignored on the marginal salary).`;
       }
 
       savingAmountEl.textContent = formatMoney(saving);
@@ -355,7 +392,7 @@
 
     // Recalculate whenever inputs change
     document.querySelectorAll(
-      "#price, #corpTaxRate, #vatOn, #vatRate, #extractionType, #personalTaxRate"
+      "#price, #corpTaxRate, #vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate, #employerNiRate"
     ).forEach(el => {
       el.addEventListener("input", calculate);
       el.addEventListener("change", calculate);
@@ -367,16 +404,18 @@
       calculate();
     });
 
-    // When extraction type changes, repopulate the tax rates accordingly
+    // When extraction type changes, repopulate the tax rates and toggle NI fields
     document.getElementById("extractionType").addEventListener("change", (e) => {
-      populatePersonalTaxRates(e.target.value);
+      const type = e.target.value;
+      populatePersonalTaxRates(type);
+      toggleNiFields(type);
       calculate();
     });
 
     // Initial setup
     populatePersonalTaxRates("dividend");
+    toggleNiFields("dividend");
     calculate();
   </script>
 </body>
 </html>
-	
