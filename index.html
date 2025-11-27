@@ -214,14 +214,9 @@
         <div class="field">
           <label for="price">Item price</label>
           <input id="price" type="number" min="0" step="0.01" value="1000" />
-          <span class="muted">Enter the price of the item.</span>
-
-          <div class="checkbox-row">
-            <input type="checkbox" id="priceIncludesVat" checked />
-            <label for="priceIncludesVat" class="muted">
-              Price includes VAT
-            </label>
-          </div>
+          <span class="muted">
+            Enter the total amount you personally pay for the item (the full invoice or till amount).
+          </span>
         </div>
 
         <div class="field">
@@ -246,7 +241,7 @@
           <div class="checkbox-row" style="margin-top: 6px;">
             <input type="checkbox" id="vatOn" checked />
             <label for="vatOn" style="font-size: 0.8rem; font-style: italic;">
-              VAT applies and can be reclaimed
+              VAT applies to this purchase and is included in the price you entered, and your company can reclaim it
             </label>
           </div>
         </div>
@@ -373,7 +368,6 @@
 
     function setDefaults() {
       document.getElementById("price").value = 1000;
-      document.getElementById("priceIncludesVat").checked = true;
       document.getElementById("corpTaxRate").value = "0.20";
       document.getElementById("vatRate").value = "0.20";
       document.getElementById("vatOn").checked = true;
@@ -388,7 +382,6 @@
       const corpTaxRate = parseFloat(document.getElementById("corpTaxRate").value) || 0;
       const vatOn = document.getElementById("vatOn").checked;
       const vatRate = parseFloat(document.getElementById("vatRate").value) || 0;
-      const priceIncludesVat = document.getElementById("priceIncludesVat").checked;
       const extractionType = document.getElementById("extractionType").value;
       const personalTaxRate = parseFloat(document.getElementById("personalTaxRate").value) || 0;
       const employeeNiRate = extractionType === "salary"
@@ -396,30 +389,23 @@
         : 0;
 
       // COMPANY COST:
-      // Determine net cost (P&L) depending on VAT behaviour
+      // priceInput is always the amount leaving you personally (gross invoice/till amount).
+      // If VAT applies and can be reclaimed, treat this as VAT-inclusive.
       let netPrice;
-      let grossPriceForPersonal;
+      let grossPriceForPersonal = priceInput;
 
       if (vatOn && vatRate > 0) {
-        if (priceIncludesVat) {
-          // Price is VAT-inclusive: company sees net cost = price / (1+vat)
-          netPrice = priceInput / (1 + vatRate);
-          grossPriceForPersonal = priceInput; // director pays the sticker price
-        } else {
-          // Price is ex-VAT: company net cost = price; director pays price + VAT
-          netPrice = priceInput;
-          grossPriceForPersonal = priceInput * (1 + vatRate);
-        }
+        // VAT-inclusive price with reclaim
+        netPrice = priceInput / (1 + vatRate);
       } else {
-        // No VAT to reclaim / ignore VAT
+        // No VAT reclaimed or VAT not applicable
         netPrice = priceInput;
-        grossPriceForPersonal = priceInput;
       }
 
       const companyCost = netPrice * (1 - corpTaxRate);
 
       // PERSONAL ROUTE:
-      // For personal route, we use the gross amount the director must spend.
+      // For personal route, we use the same gross amount you actually spend.
       const personalSpend = grossPriceForPersonal;
 
       // Dividends: pre-tax profit needed = personalSpend / ((1 - CT) * (1 - dividend tax))
@@ -493,9 +479,11 @@
 
       let vatText;
       if (vatOn && vatRate > 0) {
-        vatText = priceIncludesVat
-          ? `Assumes VAT at ${formatPercent(vatRate)} is reclaimed from a VAT-inclusive price. `
-          : `Assumes VAT at ${formatPercent(vatRate)} is reclaimed on top of the net price. `;
+        vatText =
+          `Assumes the price you entered includes VAT at ${formatPercent(vatRate)}, which your company reclaims. `;
+      } else if (vatRate > 0) {
+        vatText =
+          `VAT at ${formatPercent(vatRate)} is not reclaimed (either not applicable or not claimed). `;
       } else {
         vatText = "No VAT reclaimed or VAT not applicable. ";
       }
@@ -545,7 +533,7 @@
 
     // Recalculate whenever inputs change
     document.querySelectorAll(
-      "#price, #corpTaxRate, #vatOn, #vatRate, #priceIncludesVat, #extractionType, #personalTaxRate, #employeeNiRate"
+      "#price, #corpTaxRate, #vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
     ).forEach(el => {
       el.addEventListener("input", calculate);
       el.addEventListener("change", calculate);
