@@ -301,7 +301,7 @@
     <div class="card">
       <h1>Purchase Tax Advantage Calculator</h1>
       <p class="subtitle">
-        Compare buying personally vs through your company.
+        Compare making a purchase through your company versus paying for it personally from your take-home income.
       </p>
 
       <div class="controls-header">
@@ -309,15 +309,15 @@
         <button class="reset-btn" type="button" id="resetBtn">Reset to defaults</button>
       </div>
 
-      <!-- Item details -->
+      <!-- Purchase details -->
       <div class="section-card">
-        <div class="section-title">Item details</div>
+        <div class="section-title">Purchase Details</div>
         <div class="grid">
           <div class="field">
-            <label for="price">Item price</label>
+            <label for="price">Item Price</label>
             <input id="price" type="number" min="0" step="0.01" value="1000" />
             <span class="info-inline">
-              Enter the total amount you personally pay for the item (full invoice or till amount).
+              Enter the total cost of the item.
             </span>
           </div>
 
@@ -335,7 +335,7 @@
                 <span class="slider"></span>
               </label>
               <span class="switch-label">
-                VAT applies and is included in the price you entered, and your company can reclaim it.
+                VAT applies and is included in the price you entered, AND your company can reclaim it.
               </span>
             </div>
           </div>
@@ -344,10 +344,10 @@
 
       <!-- Company tax -->
       <div class="section-card">
-        <div class="section-title">Company tax settings</div>
+        <div class="section-title">Company Tax</div>
         <div class="grid">
           <div class="field">
-            <label for="corpTaxRate">Corporation Tax rate</label>
+            <label for="corpTaxRate">Corporation Tax Rate</label>
             <select id="corpTaxRate">
               <option value="0.19" selected>19% (small profits, up to £50k)</option>
               <option value="0.25">25% (main rate, £250k+)</option>
