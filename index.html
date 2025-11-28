@@ -189,31 +189,34 @@
       transform: translateX(22px);  /* adjusted travel */
     }
 
-    /* Segmented control for Dividends / Salary */
+/* Segmented control for Dividends / Salary */
 
-    .segmented {
-      display: inline-flex;
-      padding: 2px;
-      border-radius: 999px;
-      background: #e5e7eb;
-      margin-top: 4px;
-    }
+.segmented {
+  display: flex;           /* was inline-flex */
+  width: 100%;             /* take full width of the field */
+  padding: 2px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  margin-top: 4px;
+}
 
-    .segmented button {
-      border: none;
-      background: transparent;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      color: #4b5563;
-    }
+.segmented button {
+  flex: 1 1 0;             /* make both buttons equal width */
+  border: none;
+  background: transparent;
+  padding: 6px 0;          /* vertical padding only, width comes from flex */
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #4b5563;
+  text-align: center;      /* centre the labels */
+}
 
-    .segmented button.active {
-      background: #15803d;
-      color: #ffffff;
-      font-weight: 600;
-    }
+.segmented button.active {
+  background: #15803d;
+  color: #ffffff;
+  font-weight: 600;
+}
 
     /* RESULTS */
 
