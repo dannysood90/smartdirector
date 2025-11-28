@@ -8,6 +8,7 @@
     :root {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.4;
+      color: #0a0a0a;
     }
 
     body {
@@ -21,26 +22,26 @@
     .container {
       max-width: 800px;
       width: 100%;
-      padding: 24px;
+      padding: 24px 16px 32px;
     }
 
     .card {
       background: #ffffff;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border-radius: 20px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.7rem;
       margin-top: 0;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.3rem;
     }
 
     .subtitle {
       margin-top: 0;
-      margin-bottom: 1rem;
-      color: #555;
+      margin-bottom: 1.25rem;
+      color: #596172;
       font-size: 0.95rem;
     }
 
@@ -52,8 +53,13 @@
       margin-bottom: 0.75rem;
     }
 
+    .muted {
+      font-size: 0.8rem;
+      color: #8b94a7;
+    }
+
     .reset-btn {
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
       border: 1px solid #d0d5dd;
       background: #f9fafb;
@@ -65,11 +71,27 @@
       background: #eef2f7;
     }
 
+    /* SECTION CARDS (Item / Company / Personal) */
+
+    .section-card {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      margin-bottom: 12px;
+      border: 1px solid #e1e6ee;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 16px 24px;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 16px;
     }
 
     .field {
@@ -86,48 +108,121 @@
 
     input[type="number"],
     select {
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 9px 11px;
+      border-radius: 10px;
       border: 1px solid #ccd0d5;
       font-size: 0.95rem;
       outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      background: #fff;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      background: #ffffff;
     }
 
     input[type="number"]:focus,
     select:focus {
-      border-color: #1f7ae0;
-      box-shadow: 0 0 0 2px rgba(31,122,224,0.15);
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .checkbox-row label {
-      font-weight: 500;
-    }
-
-    .muted {
-      font-size: 0.8rem;
-      color: #777;
+      border-color: #17803b;
+      box-shadow: 0 0 0 2px rgba(23, 128, 59, 0.15);
     }
 
     .info-inline {
       font-size: 0.8rem;
-      color: #555;
-      font-style: italic;
+      color: #6b7280;
     }
 
+    /* iOS-style switch for VAT */
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .switch-label {
+      font-size: 0.78rem;
+      font-style: italic;
+      color: #6b7280;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      background-color: #e5e7eb;
+      transition: 0.2s;
+      border-radius: 999px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.2s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .switch input:checked + .slider {
+      background-color: #15803d;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Segmented control for Dividends / Salary */
+
+    .segmented {
+      display: inline-flex;
+      padding: 2px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      margin-top: 4px;
+    }
+
+    .segmented button {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #4b5563;
+    }
+
+    .segmented button.active {
+      background: #15803d;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* RESULTS */
+
     .results-summary {
+      margin-top: 6px;
       margin-bottom: 0.75rem;
       font-size: 0.95rem;
       font-weight: 600;
-      color: #1a7f37;
+      color: #15803d;
     }
 
     .results-summary.negative {
@@ -135,7 +230,7 @@
     }
 
     .warning {
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
       font-size: 0.8rem;
       color: #b3261e;
     }
@@ -143,38 +238,38 @@
     .results {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      gap: 12px;
       margin-top: 8px;
     }
 
     .result-card {
-      padding: 16px;
-      border-radius: 10px;
+      padding: 14px;
+      border-radius: 14px;
       background: #f8fafc;
       border: 1px solid #e1e6ee;
     }
 
     .result-title {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #777;
+      letter-spacing: 0.06em;
+      color: #6b7280;
       margin-bottom: 4px;
     }
 
     .result-value {
       font-size: 1.35rem;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .result-sub {
-      font-size: 0.85rem;
-      color: #666;
+      font-size: 0.83rem;
+      color: #4b5563;
     }
 
     .saving-positive {
-      color: #1a7f37;
+      color: #15803d;
     }
 
     .saving-negative {
@@ -184,15 +279,16 @@
     .disclaimer {
       margin-top: 16px;
       font-size: 0.75rem;
-      color: #777;
+      color: #6b7280;
     }
 
     @media (max-width: 600px) {
       .card {
-        padding: 18px;
+        padding: 18px 14px 16px;
+        border-radius: 18px;
       }
       .grid {
-        gap: 12px 16px;
+        gap: 10px 12px;
       }
     }
   </style>
@@ -200,84 +296,108 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>SoodSmartDirector© Purchase Calculator</h1>
+      <h1>Purchase Tax Advantage Calculator</h1>
       <p class="subtitle">
-        Compare the real cost of purchasing an item through your limited company versus buying it personally using after‑tax money you withdraw from the company as salary or dividends.
+        Compare buying personally vs through your company.
       </p>
 
       <div class="controls-header">
-        <span class="muted">Adjust the assumptions below to match your situation.</span>
+        <span class="muted">Adjust the assumptions to match your situation.</span>
         <button class="reset-btn" type="button" id="resetBtn">Reset to defaults</button>
       </div>
 
-      <div class="grid">
-        <div class="field">
-          <label for="price">Item price</label>
-          <input id="price" type="number" min="0" step="0.01" value="1000" />
-          <span class="muted">
-            Enter the total amount you personally pay for the item (the full invoice or till amount).
-          </span>
-        </div>
-
-        <div class="field">
-  <label for="corpTaxRate">Corporation Tax rate</label>
-  <select id="corpTaxRate">
-    <option value="0.19" selected>19% (small profits, up to £50k)</option>
-    <option value="0.25">25% (main rate, £250k+)</option>
-  </select>
-  <span class="muted">
-    Most small limited companies use 19% (≤ £50k profit). Use 25% if your company’s profits are in the main rate band (≥ £250k profit).
-  </span>
-</div>
-
-        <div class="field">
-          <label>VAT</label>
-
-          <select id="vatRate" style="margin-top: 6px;">
-            <option value="0.20" selected>20% (standard)</option>
-            <option value="0.05">5%</option>
-            <option value="0.00">0% (zero-rated)</option>
-          </select>
-
-          <div class="checkbox-row" style="margin-top: 6px;">
-            <input type="checkbox" id="vatOn" checked />
-            <label for="vatOn" style="font-size: 0.8rem; font-style: italic;">
-              VAT applies to this purchase and is included in the price you entered, and your company can reclaim it
-            </label>
+      <!-- Item details -->
+      <div class="section-card">
+        <div class="section-title">Item details</div>
+        <div class="grid">
+          <div class="field">
+            <label for="price">Item price</label>
+            <input id="price" type="number" min="0" step="0.01" value="1000" />
+            <span class="info-inline">
+              Enter the total amount you personally pay for the item (full invoice or till amount).
+            </span>
           </div>
-        </div>
 
-        <div class="field">
-          <label for="extractionType">How would you pay yourself?</label>
-          <select id="extractionType">
-            <option value="dividend" selected>Dividends</option>
-            <option value="salary">Salary</option>
-          </select>
-        </div>
+          <div class="field">
+            <label for="vatRate">VAT</label>
+            <select id="vatRate">
+              <option value="0.20" selected>20% (standard)</option>
+              <option value="0.05">5%</option>
+              <option value="0.00">0% (zero-rated)</option>
+            </select>
 
-        <div class="field">
-          <label for="personalTaxRate">Tax Rate</label>
-          <!-- Populated dynamically based on extraction type -->
-          <select id="personalTaxRate"></select>
-          <span class="muted">
-            This is your marginal tax rate on dividends/salary used for this purchase.
-          </span>
-        </div>
-
-        <div class="field" id="employeeNiField">
-          <label for="employeeNiRate">
-            Employee NI rate
-          </label>
-          <select id="employeeNiRate">
-            <option value="0.08" selected>8% (between £12,570 and £50,270)</option>
-            <option value="0.02">2% (over £50,270)</option>
-          </select>
-          <span class="muted">
-            Select 8% unless your total salary (not dividends) is over £50,270. Most directors take a salary of around £12,570.
-          </span>
+            <div class="switch-row">
+              <label class="switch">
+                <input type="checkbox" id="vatOn" checked />
+                <span class="slider"></span>
+              </label>
+              <span class="switch-label">
+                VAT applies and is included in the price you entered, and your company can reclaim it.
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- Company tax -->
+      <div class="section-card">
+        <div class="section-title">Company tax settings</div>
+        <div class="grid">
+          <div class="field">
+            <label for="corpTaxRate">Corporation Tax rate</label>
+            <select id="corpTaxRate">
+              <option value="0.19" selected>19% (small profits, up to £50k)</option>
+              <option value="0.25">25% (main rate, £250k+)</option>
+            </select>
+            <span class="info-inline">
+              Most small companies use 19% (≤ £50k profit). Use 25% if your profits are in the main rate band.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal tax -->
+      <div class="section-card">
+        <div class="section-title">Personal tax settings</div>
+        <div class="grid">
+          <div class="field">
+            <label>How would you pay yourself?</label>
+
+            <!-- Segmented control visible to the user -->
+            <div class="segmented" id="extractionSegment">
+              <button type="button" data-value="dividend" class="active">Dividends</button>
+              <button type="button" data-value="salary">Salary</button>
+            </div>
+
+            <!-- Original select kept for JS, but hidden -->
+            <select id="extractionType" style="display:none;">
+              <option value="dividend" selected>Dividends</option>
+              <option value="salary">Salary</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="personalTaxRate">Tax rate</label>
+            <select id="personalTaxRate"></select>
+            <span class="info-inline">
+              Your marginal tax rate on the dividends/salary used for this purchase.
+            </span>
+          </div>
+
+          <div class="field" id="employeeNiField">
+            <label for="employeeNiRate">Employee NI rate</label>
+            <select id="employeeNiRate">
+              <option value="0.08" selected>8% (between £12,570 and £50,270)</option>
+              <option value="0.02">2% (over £50,270)</option>
+            </select>
+            <span class="info-inline">
+              Select 8% unless your total salary (not dividends) is over £50,270.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results summary + cards -->
       <div id="resultsSummary" class="results-summary" style="display:none;"></div>
       <div id="warningText" class="warning" style="display:none;"></div>
 
@@ -376,6 +496,7 @@
       populatePersonalTaxRates("dividend");
       document.getElementById("employeeNiRate").value = "0.08";
       updateNiVisibility("dividend");
+      updateExtractionSegment("dividend");
     }
 
     function calculate() {
@@ -531,6 +652,29 @@
         warningEl.style.display = "none";
       }
     }
+
+    // --- Segmented control for extraction type (dividends / salary) ---
+
+    function updateExtractionSegment(value) {
+      const buttons = document.querySelectorAll("#extractionSegment button");
+      buttons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.value === value);
+      });
+    }
+
+    document.querySelectorAll("#extractionSegment button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const value = btn.dataset.value;
+        const select = document.getElementById("extractionType");
+        select.value = value;
+
+        // Keep existing logic: repopulate rates + NI visibility
+        populatePersonalTaxRates(value);
+        updateNiVisibility(value);
+        updateExtractionSegment(value);
+        calculate();
+      });
+    });
 
     // Recalculate whenever inputs change
     document.querySelectorAll(
