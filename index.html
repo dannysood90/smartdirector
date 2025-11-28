@@ -229,6 +229,26 @@
       font-weight: 600;
     }
 
+    /* ACTION BUTTONS */
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    .primary-btn {
+      background: #15803d;
+      color: #ffffff;
+      border-color: #15803d;
+    }
+
+    .primary-btn:hover {
+      background: #166534;
+    }
+
     /* RESULTS */
 
     .results-summary {
@@ -316,7 +336,7 @@
       </p>
 
       <div class="controls-header">
-        <span class="muted">Adjust the below to match your situation.</span>
+        <span class="muted">Adjust the assumptions to match your situation.</span>
         <button class="reset-btn" type="button" id="resetBtn">Reset to defaults</button>
       </div>
 
@@ -376,7 +396,7 @@
               <span>%</span>
             </div>
             <span class="info-inline">
-              This is the effective rate based on your profits. Change this if your accountant has given you a different profit figure.
+              This is the effective rate based on your profits. Change this if your accountant has given you a different figure.
             </span>
           </div>
         </div>
@@ -447,6 +467,27 @@
         </div>
       </div>
 
+      <!-- Actions: Save / Share / History -->
+      <div class="actions-row">
+        <button id="saveScenarioBtn" type="button" class="reset-btn primary-btn">
+          Save scenario
+        </button>
+        <button id="shareScenarioBtn" type="button" class="reset-btn">
+          Share results
+        </button>
+        <button id="historyBtn" type="button" class="reset-btn">
+          History
+        </button>
+      </div>
+
+      <!-- Saved scenarios section -->
+      <div class="section-card" id="savedScenariosSection" style="display:none; margin-top: 8px;">
+        <div class="section-title">Saved scenarios</div>
+        <div id="savedScenariosList" class="info-inline">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
       <p class="disclaimer">
         This is a simplified calculator based on marginal UK tax and NI rates. It does not account for all edge cases
         (allowances, thresholds, benefits, etc.) and is for illustration only. It is not tax advice. Please speak to
@@ -471,6 +512,8 @@
       { value: 0.45, label: "45% (additional-rate salary)" }
     ];
 
+    const STORAGE_KEY = "smartDirectorScenariosV1";
+
     // Simple approximation of effective Corporation Tax rate based on profit.
     // Uses 19% up to £50k, 25% from £250k, and linearly blends between.
     const CT_LOWER_PROFIT = 50000;
@@ -486,6 +529,16 @@
       return CT_RATE_LOW + t * (CT_RATE_HIGH - CT_RATE_LOW);
     }
 
+    function estimateProfitFromRate(ratePercent) {
+      const r = ratePercent / 100;
+      if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
+      if (r <= CT_RATE_LOW) return CT_LOWER_PROFIT;
+      if (r >= CT_RATE_HIGH) return CT_UPPER_PROFIT;
+      const t = (r - CT_RATE_LOW) / (CT_RATE_HIGH - CT_RATE_LOW);
+      return CT_LOWER_PROFIT + t * (CT_UPPER_PROFIT - CT_UPPER_PROFIT / CT_UPPER_PROFIT + (CT_UPPER_PROFIT - CT_LOWER_PROFIT) * t);
+    }
+
+    // Slight correction: simpler mapping back from rate to profit
     function estimateProfitFromRate(ratePercent) {
       const r = ratePercent / 100;
       if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
@@ -731,6 +784,204 @@
       });
     });
 
+    // --- Scenario saving / history / sharing ---
+
+    function getCurrentScenario() {
+      return {
+        id: Date.now(),
+        name: "",
+        createdAt: new Date().toISOString(),
+        inputs: {
+          price: document.getElementById("price").value,
+          corpProfit: document.getElementById("corpProfit").value,
+          corpTaxRate: document.getElementById("corpTaxRate").value,
+          vatRate: document.getElementById("vatRate").value,
+          vatOn: document.getElementById("vatOn").checked,
+          extractionType: document.getElementById("extractionType").value,
+          personalTaxRate: document.getElementById("personalTaxRate").value,
+          employeeNiRate: document.getElementById("employeeNiRate").value,
+        },
+        outputs: {
+          companyCost: document.getElementById("companyCost").textContent,
+          personalTotal: document.getElementById("personalTotal").textContent,
+          savingAmount: document.getElementById("savingAmount").textContent,
+          savingDetails: document.getElementById("savingDetails").textContent,
+        }
+      };
+    }
+
+    function loadScenarios() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      try {
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveScenarios(list) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+
+    function renderSavedScenarios() {
+      const list = loadScenarios();
+      const section = document.getElementById("savedScenariosSection");
+      const container = document.getElementById("savedScenariosList");
+
+      if (!list.length) {
+        section.style.display = "none";
+        container.innerHTML = "";
+        return;
+      }
+
+      section.style.display = "block";
+      container.innerHTML = "";
+
+      list
+        .sort((a, b) => b.id - a.id) // newest first
+        .forEach((scenario, index) => {
+          const wrapper = document.createElement("div");
+          wrapper.style.marginBottom = "10px";
+          wrapper.style.paddingBottom = "8px";
+          wrapper.style.borderBottom = "1px solid #e5e7eb";
+
+          const title = document.createElement("div");
+          title.style.fontWeight = "600";
+          title.style.fontSize = "0.85rem";
+          title.textContent = scenario.name || `Scenario ${index + 1}`;
+
+          const details = document.createElement("div");
+          details.style.fontSize = "0.8rem";
+          details.style.marginTop = "2px";
+          details.textContent =
+            `${scenario.outputs.savingAmount} saving vs ${scenario.outputs.personalTotal} personal cost`;
+
+          const buttonsRow = document.createElement("div");
+          buttonsRow.style.marginTop = "4px";
+          buttonsRow.style.display = "flex";
+          buttonsRow.style.gap = "6px";
+
+          const loadBtn = document.createElement("button");
+          loadBtn.textContent = "Load";
+          loadBtn.type = "button";
+          loadBtn.className = "reset-btn";
+          loadBtn.style.fontSize = "0.75rem";
+          loadBtn.onclick = () => restoreScenario(scenario);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Delete";
+          deleteBtn.type = "button";
+          deleteBtn.className = "reset-btn";
+          deleteBtn.style.fontSize = "0.75rem";
+          deleteBtn.onclick = () => deleteScenario(scenario.id);
+
+          buttonsRow.appendChild(loadBtn);
+          buttonsRow.appendChild(deleteBtn);
+
+          wrapper.appendChild(title);
+          wrapper.appendChild(details);
+          wrapper.appendChild(buttonsRow);
+
+          container.appendChild(wrapper);
+        });
+    }
+
+    function restoreScenario(scenario) {
+      const i = scenario.inputs;
+
+      document.getElementById("price").value = i.price;
+      document.getElementById("corpProfit").value = i.corpProfit;
+      document.getElementById("corpTaxRate").value = i.corpTaxRate;
+      document.getElementById("vatRate").value = i.vatRate;
+      document.getElementById("vatOn").checked = i.vatOn;
+
+      document.getElementById("extractionType").value = i.extractionType;
+      populatePersonalTaxRates(i.extractionType);
+      updateNiVisibility(i.extractionType);
+      updateExtractionSegment(i.extractionType);
+
+      // Set personal tax rate if it matches one of the options
+      const ptrSelect = document.getElementById("personalTaxRate");
+      const ptrVal = i.personalTaxRate;
+      const option = Array.from(ptrSelect.options).find(o => o.value === String(ptrVal));
+      if (option) {
+        ptrSelect.value = ptrVal;
+      }
+
+      document.getElementById("employeeNiRate").value = i.employeeNiRate;
+
+      calculate();
+
+      // Scroll back to top of card so user sees the numbers
+      document.querySelector(".card").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function deleteScenario(id) {
+      const list = loadScenarios().filter(s => s.id !== id);
+      saveScenarios(list);
+      renderSavedScenarios();
+    }
+
+    function saveCurrentScenario() {
+      const scenario = getCurrentScenario();
+      const defaultName = `Purchase £${document.getElementById("price").value || "0"}`;
+      const name = prompt("Give this scenario a name (e.g. “MacBook Pro”):", defaultName);
+      if (!name) return;
+      scenario.name = name.trim();
+
+      const list = loadScenarios();
+      list.push(scenario);
+      saveScenarios(list);
+      renderSavedScenarios();
+      alert("Scenario saved.");
+    }
+
+    function shareScenario() {
+      const price = document.getElementById("price").value || "0";
+      const companyCost = document.getElementById("companyCost").textContent || "–";
+      const personalTotal = document.getElementById("personalTotal").textContent || "–";
+      const savingAmount = document.getElementById("savingAmount").textContent || "–";
+      const savingDetails = document.getElementById("savingDetails").textContent || "";
+
+      const text = `
+SmartDirector – Purchase scenario
+
+Item price: £${price}
+If company buys it: ${companyCost}
+If you buy personally: ${personalTotal}
+Saving by using the company: ${savingAmount}
+
+${savingDetails}
+      `.trim();
+
+      if (navigator.share) {
+        navigator.share({
+          title: "SmartDirector scenario",
+          text
+        }).catch(() => {
+          // ignored if user cancels
+        });
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert("Scenario summary copied to clipboard.");
+        }).catch(() => {
+          alert("Could not copy to clipboard on this device.");
+        });
+      } else {
+        alert("Sharing is not supported on this device.");
+      }
+    }
+
+    function showHistory() {
+      renderSavedScenarios();
+      const section = document.getElementById("savedScenariosSection");
+      if (section.style.display !== "none") {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        alert("No saved scenarios yet.");
+      }
+    }
+
     // Recalculate whenever inputs change
     document.querySelectorAll(
       "#price, #vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
@@ -749,6 +1000,11 @@
     document.getElementById("corpProfit").addEventListener("input", updateCorpRateFromProfit);
     document.getElementById("corpTaxRate").addEventListener("input", updateProfitFromCorpRate);
 
+    // Action buttons
+    document.getElementById("saveScenarioBtn").addEventListener("click", saveCurrentScenario);
+    document.getElementById("shareScenarioBtn").addEventListener("click", shareScenario);
+    document.getElementById("historyBtn").addEventListener("click", showHistory);
+
     // Reset button
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
@@ -758,6 +1014,7 @@
     // Initial setup
     setDefaults();
     updateCorpRateFromProfit();
+    renderSavedScenarios();
   </script>
 </body>
 </html>
