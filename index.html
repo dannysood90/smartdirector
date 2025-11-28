@@ -220,14 +220,15 @@
         </div>
 
         <div class="field">
-          <label for="corpTaxRate">Corporation Tax rate</label>
-          <select id="corpTaxRate">
-            <option value="0.19">19%</option>
-            <option value="0.20" selected>20%</option>
-            <option value="0.25">25%</option>
-          </select>
-          <span class="muted">Used for company tax relief and dividend calculations.</span>
-        </div>
+  <label for="corpTaxRate">Corporation Tax rate</label>
+  <select id="corpTaxRate">
+    <option value="0.19" selected>19% (small profits, up to £50k)</option>
+    <option value="0.25">25% (main rate, £250k+)</option>
+  </select>
+  <span class="muted">
+    Most small limited companies use 19% (≤ £50k profit). Use 25% if your company’s profits are in the main rate band (≥ £250k profit).
+  </span>
+</div>
 
         <div class="field">
           <label>VAT</label>
