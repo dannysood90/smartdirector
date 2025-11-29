@@ -148,11 +148,25 @@
       white-space: nowrap;
     }
 
-    /* Range slider styling (simple) */
+    /* Range slider styling */
 
     input[type="range"] {
       width: 100%;
       cursor: pointer;
+      accent-color: #15803d; /* match your theme */
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-value {
+      min-width: 90px;
+      font-weight: 600;
+      color: #111827;
+      text-align: right;
     }
 
     /* iOS-style switch for VAT – WIDER VERSION */
@@ -375,9 +389,19 @@
         <div class="grid">
           <div class="field">
             <label for="corpProfit">Estimated annual profits</label>
-            <input id="corpProfit" type="number" min="1" max="250000" step="1000" value="50000" />
+            <div class="slider-wrap">
+              <input
+                id="corpProfit"
+                type="range"
+                min="50000"
+                max="250000"
+                step="1000"
+                value="50000"
+              />
+              <span id="corpProfitValue" class="slider-value">£50,000</span>
+            </div>
             <span class="info-inline">
-              Before Corporation Tax, for this financial year.
+              Before Corporation Tax, for this financial year. 19% applies up to £50,000 and 25% at £250,000+, blended between.
             </span>
           </div>
 
@@ -561,7 +585,15 @@
     function updateCorpRateFromProfit() {
       if (isSyncingCorp) return;
       isSyncingCorp = true;
-      const profit = parseFloat(document.getElementById("corpProfit").value) || 0;
+
+      const profitInput = document.getElementById("corpProfit");
+      const profitLabel = document.getElementById("corpProfitValue");
+      const profit = parseFloat(profitInput.value) || 0;
+
+      if (profitLabel) {
+        profitLabel.textContent = "£" + profit.toLocaleString();
+      }
+
       const rate = effectiveCorpRateFromProfit(profit) * 100;
 
       const slider = document.getElementById("corpTaxRate");
@@ -580,12 +612,22 @@
 
       const slider = document.getElementById("corpTaxRate");
       const display = document.getElementById("corpTaxRateDisplay");
-
       const ratePercent = parseFloat(slider.value) || (CT_RATE_LOW * 100);
+
       display.textContent = ratePercent.toFixed(1) + "%";
 
       const estProfit = estimateProfitFromRate(ratePercent);
-      document.getElementById("corpProfit").value = Math.round(estProfit / 1000) * 1000; // round to nearest £1k
+      const profitInput = document.getElementById("corpProfit");
+      const profitLabel = document.getElementById("corpProfitValue");
+
+      // Round to nearest £1k and clamp to slider range
+      let roundedProfit = Math.round(estProfit / 1000) * 1000;
+      roundedProfit = Math.min(Math.max(roundedProfit, 50000), 250000);
+
+      profitInput.value = roundedProfit;
+      if (profitLabel) {
+        profitLabel.textContent = "£" + roundedProfit.toLocaleString();
+      }
 
       calculate();
       isSyncingCorp = false;
@@ -593,7 +635,14 @@
 
     function setDefaults() {
       document.getElementById("price").value = 1000;
-      document.getElementById("corpProfit").value = 50000;
+
+      const defaultProfit = 50000;
+      const profitInput = document.getElementById("corpProfit");
+      const profitLabel = document.getElementById("corpProfitValue");
+      profitInput.value = defaultProfit;
+      if (profitLabel) {
+        profitLabel.textContent = "£" + defaultProfit.toLocaleString();
+      }
 
       const defaultRatePercent = CT_RATE_LOW * 100;
       const slider = document.getElementById("corpTaxRate");
@@ -769,7 +818,7 @@
       });
     });
 
-    // Recalculate whenever inputs change
+    // Recalculate whenever main inputs change
     document.querySelectorAll(
       "#price, #vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
     ).forEach(el => {
@@ -783,7 +832,7 @@
       calculate();
     });
 
-    // Profit / CT rate sync
+    // Profit / CT rate sync via sliders
     document.getElementById("corpProfit").addEventListener("input", updateCorpRateFromProfit);
     document.getElementById("corpTaxRate").addEventListener("input", updateProfitFromCorpRate);
 
