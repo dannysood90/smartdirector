@@ -575,9 +575,12 @@
     }
 
     function formatMoney(value) {
-      if (!isFinite(value)) return "£–";
-      return "£" + value.toFixed(2);
-    }
+  if (!isFinite(value)) return "£–";
+  return "£" + value.toLocaleString("en-GB", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
 
     function formatPercent(value) {
       if (!isFinite(value)) return "–%";
