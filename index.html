@@ -148,6 +148,31 @@
       white-space: nowrap;
     }
 
+    /* Currency prefix for Item Price */
+
+    .currency-prefix {
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: #e5e7eb;
+      border: 1px solid #ccd0d5;
+    }
+
+    .inline-input input.price-input {
+      flex: 1 1 0;
+      border-radius: 10px;
+      border: 1px solid #ccd0d5;
+      padding: 9px 11px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      background: #ffffff;
+    }
+
+    .inline-input input.price-input:focus {
+      border-color: #17803b;
+      box-shadow: 0 0 0 2px rgba(23, 128, 59, 0.15);
+    }
+
     /* Range slider styling */
 
     input[type="range"] {
@@ -357,7 +382,17 @@
         <div class="grid">
           <div class="field">
             <label for="price">Item Price</label>
-            <input id="price" type="number" min="0" step="0.01" value="1000" />
+            <div class="inline-input">
+              <span class="currency-prefix">£</span>
+              <!-- type="text" so we can show 1,000 etc -->
+              <input
+                id="price"
+                class="price-input"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+              />
+            </div>
             <span class="info-inline">
               Enter the total cost of the item.
             </span>
@@ -549,6 +584,35 @@
       return (value * 100).toFixed(1) + "%";
     }
 
+    // --- Item price helpers (currency formatting) ---
+
+    function getPriceNumeric() {
+      const input = document.getElementById("price");
+      if (!input) return 0;
+      const raw = input.value || "";
+      const cleaned = raw.replace(/[^0-9.]/g, "");
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function formatPriceField() {
+      const input = document.getElementById("price");
+      if (!input) return;
+      const num = getPriceNumeric();
+      if (!num) {
+        input.value = "";
+        return;
+      }
+
+      // Show commas, and only show decimals if needed
+      const hasDecimals = !Number.isInteger(num);
+      const options = hasDecimals
+        ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        : { minimumFractionDigits: 0, maximumFractionDigits: 0 };
+
+      input.value = num.toLocaleString("en-GB", options);
+    }
+
     function populatePersonalTaxRates(extractionType) {
       const select = document.getElementById("personalTaxRate");
       select.innerHTML = ""; // clear existing options
@@ -635,7 +699,11 @@
     }
 
     function setDefaults() {
-      document.getElementById("price").value = 1000;
+      const priceInput = document.getElementById("price");
+      if (priceInput) {
+        priceInput.value = "1000";
+        formatPriceField();
+      }
 
       const defaultProfit = 50000;
       const profitInput = document.getElementById("corpProfit");
@@ -661,7 +729,7 @@
     }
 
     function calculate() {
-      const priceInput = parseFloat(document.getElementById("price").value) || 0;
+      const priceInputNumeric = getPriceNumeric();
       const corpTaxRate = (parseFloat(document.getElementById("corpTaxRate").value) || 0) / 100;
       const vatOn = document.getElementById("vatOn").checked;
       const vatRate = parseFloat(document.getElementById("vatRate").value) || 0;
@@ -673,12 +741,12 @@
 
       // COMPANY COST:
       let netPrice;
-      let grossPriceForPersonal = priceInput;
+      let grossPriceForPersonal = priceInputNumeric;
 
       if (vatOn && vatRate > 0) {
-        netPrice = priceInput / (1 + vatRate);
+        netPrice = priceInputNumeric / (1 + vatRate);
       } else {
-        netPrice = priceInput;
+        netPrice = priceInputNumeric;
       }
 
       const companyCost = netPrice * (1 - corpTaxRate);
@@ -821,7 +889,7 @@
 
     // Recalculate whenever main inputs change
     document.querySelectorAll(
-      "#price, #vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
+      "#vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
     ).forEach(el => {
       el.addEventListener("input", calculate);
       el.addEventListener("change", calculate);
@@ -837,16 +905,29 @@
     document.getElementById("corpProfit").addEventListener("input", updateCorpRateFromProfit);
     document.getElementById("corpTaxRate").addEventListener("input", updateProfitFromCorpRate);
 
+    // Item price formatting
+    document.getElementById("price").addEventListener("blur", () => {
+      formatPriceField();
+      calculate();
+    });
+
+    document.getElementById("price").addEventListener("input", () => {
+      // Recalculate based on raw numeric value as user types
+      calculate();
+    });
+
     // Reset button
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
       updateCorpRateFromProfit();
+      calculate();
     });
 
     // Initial setup
     window.addEventListener("load", () => {
       setDefaults();
       updateCorpRateFromProfit();
+      calculate();
     });
   </script>
 </body>
