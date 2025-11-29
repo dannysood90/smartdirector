@@ -707,7 +707,7 @@
           const dividendTax = grossDividend * personalTaxRate;
 
           breakdownText =
-            `Includes ${formatMoney(corpTax)} in Corporation Tax and ` +
+            `Considers purchase price, ${formatMoney(corpTax)} in Corporation Tax and ` +
             `${formatMoney(dividendTax)} in dividend tax `;
         }
       } else {
@@ -726,7 +726,7 @@
           const employerNI = grossSalary * EMPLOYER_NI_RATE;
 
           breakdownText =
-            `Includes ${formatMoney(incomeTax)} in income tax, ` +
+            `Considers purchase price, ${formatMoney(incomeTax)} in income tax, ` +
             `${formatMoney(employeeNI)} in employee NI and ` +
             `${formatMoney(employerNI)} in employer NI to leave you with `;
         }
