@@ -139,12 +139,20 @@
     .inline-input {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .inline-input span {
       font-size: 0.9rem;
       color: #4b5563;
+      white-space: nowrap;
+    }
+
+    /* Range slider styling (simple) */
+
+    input[type="range"] {
+      width: 100%;
+      cursor: pointer;
     }
 
     /* iOS-style switch for VAT – WIDER VERSION */
@@ -369,31 +377,33 @@
             <label for="corpProfit">Estimated annual profits</label>
             <input id="corpProfit" type="number" min="1" max="250000" step="1000" value="50000" />
             <span class="info-inline">
-              Estimated profit before Corporation Tax, for this financial year.
+              Before Corporation Tax, for this financial year.
             </span>
           </div>
 
           <div class="field">
-            <label for="corpTaxRate">Corporation Tax Rate</label>
+            <label for="corpTaxRate">Corporation Tax rate</label>
             <div class="inline-input">
-              <input id="corpTaxRate" type="number" min="10" max="30" step="0.1" value="19.0" />
-              <span>%</span>
+              <input
+                id="corpTaxRate"
+                type="range"
+                min="19"
+                max="25"
+                step="0.1"
+                value="19.0"
+              />
+              <span id="corpTaxRateDisplay">19.0%</span>
             </div>
             <span class="info-inline">
-              Estimated effective rate based on your profits. You can adjust this manually if you know your rate.
+              Estimated effective rate based on your profits. You can adjust this manually.
             </span>
           </div>
         </div>
       </div>
-      
-      <p id="corpProfitWarning" class="warning" style="display:none;">
-  Corporation Tax is capped at 25% for profits above £250,000.  
-  Increasing profits beyond this point does not increase the tax rate further.
-</p>
 
       <!-- Personal tax -->
       <div class="section-card">
-        <div class="section-title">Personal Tax</div>
+        <div class="section-title">Personal tax settings</div>
         <div class="grid">
           <div class="field">
             <label>How would you pay yourself?</label>
@@ -549,32 +559,34 @@
     let isSyncingCorp = false;
 
     function updateCorpRateFromProfit() {
-  if (isSyncingCorp) return;
-  isSyncingCorp = true;
+      if (isSyncingCorp) return;
+      isSyncingCorp = true;
+      const profit = parseFloat(document.getElementById("corpProfit").value) || 0;
+      const rate = effectiveCorpRateFromProfit(profit) * 100;
 
-  const profit = parseFloat(document.getElementById("corpProfit").value) || 0;
+      const slider = document.getElementById("corpTaxRate");
+      const display = document.getElementById("corpTaxRateDisplay");
 
-  // Show or hide the high-profit warning
-  const warning = document.getElementById("corpProfitWarning");
-  if (profit > 250000) {
-    warning.style.display = "block";
-  } else {
-    warning.style.display = "none";
-  }
+      slider.value = rate.toFixed(1);
+      display.textContent = rate.toFixed(1) + "%";
 
-  const rate = effectiveCorpRateFromProfit(profit) * 100;
-  document.getElementById("corpTaxRate").value = rate.toFixed(1);
-
-  calculate();
-  isSyncingCorp = false;
-}
+      calculate();
+      isSyncingCorp = false;
+    }
 
     function updateProfitFromCorpRate() {
       if (isSyncingCorp) return;
       isSyncingCorp = true;
-      const ratePercent = parseFloat(document.getElementById("corpTaxRate").value) || (CT_RATE_LOW * 100);
+
+      const slider = document.getElementById("corpTaxRate");
+      const display = document.getElementById("corpTaxRateDisplay");
+
+      const ratePercent = parseFloat(slider.value) || (CT_RATE_LOW * 100);
+      display.textContent = ratePercent.toFixed(1) + "%";
+
       const estProfit = estimateProfitFromRate(ratePercent);
       document.getElementById("corpProfit").value = Math.round(estProfit / 1000) * 1000; // round to nearest £1k
+
       calculate();
       isSyncingCorp = false;
     }
@@ -582,7 +594,13 @@
     function setDefaults() {
       document.getElementById("price").value = 1000;
       document.getElementById("corpProfit").value = 50000;
-      document.getElementById("corpTaxRate").value = (CT_RATE_LOW * 100).toFixed(1);
+
+      const defaultRatePercent = CT_RATE_LOW * 100;
+      const slider = document.getElementById("corpTaxRate");
+      const display = document.getElementById("corpTaxRateDisplay");
+      slider.value = defaultRatePercent.toFixed(1);
+      display.textContent = defaultRatePercent.toFixed(1) + "%";
+
       document.getElementById("vatRate").value = "0.20";
       document.getElementById("vatOn").checked = true;
       document.getElementById("extractionType").value = "dividend";
@@ -775,7 +793,7 @@
       updateCorpRateFromProfit();
     });
 
-    // Initial setup (no splash now)
+    // Initial setup
     window.addEventListener("load", () => {
       setDefaults();
       updateCorpRateFromProfit();
