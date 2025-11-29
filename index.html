@@ -549,14 +549,25 @@
     let isSyncingCorp = false;
 
     function updateCorpRateFromProfit() {
-      if (isSyncingCorp) return;
-      isSyncingCorp = true;
-      const profit = parseFloat(document.getElementById("corpProfit").value) || 0;
-      const rate = effectiveCorpRateFromProfit(profit) * 100;
-      document.getElementById("corpTaxRate").value = rate.toFixed(1);
-      calculate();
-      isSyncingCorp = false;
-    }
+  if (isSyncingCorp) return;
+  isSyncingCorp = true;
+
+  const profit = parseFloat(document.getElementById("corpProfit").value) || 0;
+
+  // Show or hide the high-profit warning
+  const warning = document.getElementById("corpProfitWarning");
+  if (profit > 250000) {
+    warning.style.display = "block";
+  } else {
+    warning.style.display = "none";
+  }
+
+  const rate = effectiveCorpRateFromProfit(profit) * 100;
+  document.getElementById("corpTaxRate").value = rate.toFixed(1);
+
+  calculate();
+  isSyncingCorp = false;
+}
 
     function updateProfitFromCorpRate() {
       if (isSyncingCorp) return;
