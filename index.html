@@ -251,12 +251,12 @@
       color: #6b7280;
     }
 
-/* iOS-style toggle (perfect dimensions) */
+/* Compact iOS-style VAT toggle */
 .switch {
   position: relative;
   display: inline-block;
-  width: 50px;      /* wider track */
-  height: 28px;
+  width: 46px;      /* track width */
+  height: 26px;     /* track height */
 }
 
 .switch input {
@@ -271,21 +271,22 @@
   background-color: #e5e7eb;
   border-radius: 999px;
   cursor: pointer;
-  transition: background-color 0.25s ease;
+  transition: background-color 0.22s ease;
+  overflow: hidden;           /* prevent any bleed */
 }
 
 /* Thumb */
 .slider:before {
   content: "";
   position: absolute;
-  height: 24px;
-  width: 24px;
-  left: 2px;      /* perfectly centred vertically & horizontally */
+  height: 22px;
+  width: 22px;
+  left: 2px;                  /* OFF = left */
   top: 2px;
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: transform 0.25s ease;
+  transition: transform 0.22s ease;
 }
 
 /* ON state */
@@ -294,7 +295,7 @@
 }
 
 .switch input:checked + .slider:before {
-  transform: translateX(22px); /* 50 - 24 - 2 = ~24px minus slight balance */
+  transform: translateX(20px);  /* ON = right, still fully inside track */
 }
 
     .segmented {
