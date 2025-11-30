@@ -385,7 +385,7 @@
     }
 
     .disclaimer {
-      margin-top: 16px;
+      margin-top: 8px;
       font-size: 0.75rem;
       color: #6b7280;
     }
@@ -411,8 +411,12 @@
       </button>
       <div id="learnMorePanel" class="learn-more-panel">
         Made for Directors of UK Limited companies. Compare making a purchase through your company versus paying for it personally from your take-home income.
-         Assumes you have already used your £12,570 personal tax-free
-        allowance.
+        Assumes you have already used your £12,570 personal tax-free allowance.
+        <p class="disclaimer">
+          This is a simplified calculator based on marginal UK tax and NI rates. It does not account for all edge cases
+          (allowances, thresholds, benefits, etc.) and is for illustration only. It is not tax advice. Please speak to
+          your accountant or tax adviser before making decisions.
+        </p>
       </div>
 
       <!-- Purchase details -->
@@ -437,13 +441,7 @@
           </div>
 
           <div class="field">
-            <label for="vatRate">VAT</label>
-            <select id="vatRate">
-              <option value="0.20" selected>20% (standard)</option>
-              <option value="0.05">5%</option>
-              <option value="0.00">0% (zero-rated)</option>
-            </select>
-
+            <!-- VAT toggle moved above label + dropdown -->
             <div class="switch-row">
               <label class="switch">
                 <input type="checkbox" id="vatOn" checked />
@@ -453,6 +451,13 @@
                 VAT applies and is included in the price you entered, AND your company can reclaim it.
               </span>
             </div>
+
+            <label for="vatRate">VAT</label>
+            <select id="vatRate">
+              <option value="0.20" selected>20% (standard)</option>
+              <option value="0.05">5%</option>
+              <option value="0.00">0% (zero-rated)</option>
+            </select>
           </div>
         </div>
       </div>
@@ -555,12 +560,6 @@
           <div class="result-sub" id="personalBreakdown"></div>
         </div>
       </div>
-
-      <p class="disclaimer">
-        This is a simplified calculator based on marginal UK tax and NI rates. It does not account for all edge cases
-        (allowances, thresholds, benefits, etc.) and is for illustration only. It is not tax advice. Please speak to
-        your accountant or tax adviser before making decisions.
-      </p>
     </div>
   </div>
 
