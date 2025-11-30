@@ -79,8 +79,6 @@
       background: #eef2f7;
     }
 
-    /* SECTION CARDS (Item / Company / Personal) */
-
     .section-card {
       background: #f9fafb;
       border-radius: 16px;
@@ -125,12 +123,6 @@
       background: #ffffff;
     }
 
-    input[type="number"]:focus,
-    select:focus {
-      border-color: #17803b;
-      box-shadow: 0 0 0 2px rgba(23, 128, 59, 0.15);
-    }
-
     .info-inline {
       font-size: 0.8rem;
       color: #6b7280;
@@ -141,14 +133,6 @@
       align-items: center;
       gap: 8px;
     }
-
-    .inline-input span {
-      font-size: 0.9rem;
-      color: #4b5563;
-      white-space: nowrap;
-    }
-
-    /* Currency prefix for Item Price */
 
     .currency-prefix {
       padding: 7px 10px;
@@ -164,21 +148,13 @@
       padding: 9px 11px;
       font-size: 0.95rem;
       outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       background: #ffffff;
     }
-
-    .inline-input input.price-input:focus {
-      border-color: #17803b;
-      box-shadow: 0 0 0 2px rgba(23, 128, 59, 0.15);
-    }
-
-    /* Range slider styling */
 
     input[type="range"] {
       width: 100%;
       cursor: pointer;
-      accent-color: #15803d; /* match your theme */
+      accent-color: #15803d;
     }
 
     .slider-wrap {
@@ -194,19 +170,11 @@
       text-align: right;
     }
 
-    /* iOS-style switch for VAT – WIDER VERSION */
-
     .switch-row {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-top: 6px;
-    }
-
-    .switch-label {
-      font-size: 0.78rem;
-      font-style: italic;
-      color: #6b7280;
     }
 
     .switch {
@@ -218,8 +186,6 @@
 
     .switch input {
       opacity: 0;
-      width: 0;
-      height: 0;
     }
 
     .slider {
@@ -230,8 +196,8 @@
       right: 2px;
       bottom: 2px;
       background-color: #e5e7eb;
-      transition: 0.2s;
       border-radius: 999px;
+      transition: 0.2s;
     }
 
     .slider:before {
@@ -242,8 +208,8 @@
       left: 2px;
       bottom: 2px;
       background-color: white;
-      transition: 0.2s;
       border-radius: 50%;
+      transition: 0.2s;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
     }
 
@@ -255,27 +221,22 @@
       transform: translateX(22px);
     }
 
-    /* Segmented control for Dividends / Salary */
-
     .segmented {
       display: flex;
       width: 100%;
       padding: 2px;
       border-radius: 999px;
       background: #e5e7eb;
-      margin-top: 4px;
     }
 
     .segmented button {
-      flex: 1 1 0;
+      flex: 1;
       border: none;
       background: transparent;
       padding: 6px 0;
       border-radius: 999px;
       font-size: 0.85rem;
       cursor: pointer;
-      color: #4b5563;
-      text-align: center;
     }
 
     .segmented button.active {
@@ -284,23 +245,16 @@
       font-weight: 600;
     }
 
-    /* RESULTS */
-
     .results-summary {
       margin-top: 6px;
       margin-bottom: 0.75rem;
       font-size: 0.95rem;
       font-weight: 600;
       color: #15803d;
+      display: none;
     }
 
     .results-summary.negative {
-      color: #b3261e;
-    }
-
-    .warning {
-      margin-top: 0.25rem;
-      font-size: 0.8rem;
       color: #b3261e;
     }
 
@@ -320,10 +274,9 @@
 
     .result-title {
       font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
       color: #6b7280;
       margin-bottom: 4px;
+      text-transform: uppercase;
     }
 
     .result-value {
@@ -337,31 +290,14 @@
       color: #4b5563;
     }
 
-    .saving-positive {
-      color: #15803d;
-    }
-
-    .saving-negative {
-      color: #b3261e;
-    }
-
     .disclaimer {
       margin-top: 16px;
       font-size: 0.75rem;
       color: #6b7280;
     }
-
-    @media (max-width: 600px) {
-      .card {
-        padding: 18px 14px 16px;
-        border-radius: 18px;
-      }
-      .grid {
-        gap: 10px 12px;
-      }
-    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="card">
@@ -373,29 +309,21 @@
 
       <div class="controls-header">
         <span class="muted">Adjust the assumptions to match your situation.</span>
-        <button class="reset-btn" type="button" id="resetBtn">Reset to defaults</button>
+        <button class="reset-btn" id="resetBtn">Reset to defaults</button>
       </div>
 
       <!-- Purchase details -->
       <div class="section-card">
         <div class="section-title">Purchase Details</div>
         <div class="grid">
+
           <div class="field">
             <label for="price">Item Price</label>
             <div class="inline-input">
               <span class="currency-prefix">£</span>
-              <!-- type="text" so we can show 1,000 etc -->
-              <input
-                id="price"
-                class="price-input"
-                type="text"
-                inputmode="decimal"
-                autocomplete="off"
-              />
+              <input id="price" class="price-input" type="text" inputmode="decimal" autocomplete="off" />
             </div>
-            <span class="info-inline">
-              Enter the total cost of the item.
-            </span>
+            <span class="info-inline">Enter the total cost of the item.</span>
           </div>
 
           <div class="field">
@@ -416,6 +344,7 @@
               </span>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -423,58 +352,40 @@
       <div class="section-card">
         <div class="section-title">Company Tax</div>
         <div class="grid">
+
           <div class="field">
             <label for="corpProfit">Annual Profits</label>
             <div class="slider-wrap">
-              <input
-                id="corpProfit"
-                type="range"
-                min="50000"
-                max="250000"
-                step="1000"
-                value="50000"
-              />
+              <input id="corpProfit" type="range" min="50000" max="250000" step="1000" value="50000" />
               <span id="corpProfitValue" class="slider-value">£50,000</span>
             </div>
             <span class="info-inline">
-              Before Corporation Tax, for this financial year. 19% applies for £50,000 or under, and 25% at £250,000+.
+              Before Corporation Tax. 19% applies up to £50k, and 25% at £250k+.
             </span>
           </div>
 
           <div class="field">
-            <label for="corpTaxRate">Corporation Tax rate</label>
+            <label for="corpTaxRate">Corporation Tax Rate</label>
             <div class="inline-input">
-              <input
-                id="corpTaxRate"
-                type="range"
-                min="19"
-                max="25"
-                step="0.1"
-                value="19.0"
-              />
+              <input id="corpTaxRate" type="range" min="19" max="25" step="0.1" value="19" />
               <span id="corpTaxRateDisplay">19.0%</span>
             </div>
-            <span class="info-inline">
-              Estimated effective rate based on your profits. You can adjust this manually.
-            </span>
           </div>
+
         </div>
       </div>
 
       <!-- Personal tax -->
       <div class="section-card">
-        <div class="section-title">Personal tax settings</div>
+        <div class="section-title">Personal Tax Settings</div>
         <div class="grid">
+
           <div class="field">
             <label>How would you pay yourself?</label>
-
-            <!-- Segmented control visible to the user -->
             <div class="segmented" id="extractionSegment">
               <button type="button" data-value="dividend" class="active">Dividends</button>
               <button type="button" data-value="salary">Salary</button>
             </div>
-
-            <!-- Original select kept for JS, but hidden -->
             <select id="extractionType" style="display:none;">
               <option value="dividend" selected>Dividends</option>
               <option value="salary">Salary</option>
@@ -492,21 +403,19 @@
           <div class="field" id="employeeNiField">
             <label for="employeeNiRate">Employee NI rate</label>
             <select id="employeeNiRate">
-              <option value="0.08" selected>8% (between £12,570 and £50,270)</option>
-              <option value="0.02">2% (over £50,270)</option>
+              <option value="0.08">8% (standard)</option>
+              <option value="0.02">2% (higher earnings)</option>
             </select>
-            <span class="info-inline">
-              Select 8% unless your total salary (not dividends) is over £50,270.
-            </span>
           </div>
+
         </div>
       </div>
 
-      <!-- Results summary + cards -->
-      <div id="resultsSummary" class="results-summary" style="display:none;"></div>
+      <div id="resultsSummary" class="results-summary"></div>
       <div id="warningText" class="warning" style="display:none;"></div>
 
       <div class="results">
+
         <div class="result-card">
           <div class="result-title">If the company buys it</div>
           <div class="result-value" id="companyCost">£–</div>
@@ -519,24 +428,19 @@
           <div class="result-sub" id="personalBreakdown"></div>
         </div>
 
-        <div class="result-card">
-          <div class="result-title">Saving by using the company</div>
-          <div class="result-value" id="savingAmount">£–</div>
-          <div class="result-sub" id="savingDetails"></div>
-        </div>
       </div>
 
       <p class="disclaimer">
         This is a simplified calculator based on marginal UK tax and NI rates. It does not account for all edge cases
-        (allowances, thresholds, benefits, etc.) and is for illustration only. It is not tax advice. Please speak to
-        your accountant or tax adviser before making decisions.
+        and is for illustration only. Speak to your accountant or tax adviser before making decisions.
       </p>
+
     </div>
   </div>
 
   <script>
-    // Employer NI (standard Class 1 secondary rate)
-    const EMPLOYER_NI_RATE = 0.138;  // 13.8% employer Class 1
+
+    const EMPLOYER_NI_RATE = 0.138;
 
     const dividendRates = [
       { value: 0.0875, label: "8.75% (basic-rate dividends)" },
@@ -550,15 +454,12 @@
       { value: 0.45, label: "45% (additional-rate salary)" }
     ];
 
-    // Simple approximation of effective Corporation Tax rate based on profit.
-    // Uses 19% up to £50k, 25% from £250k, and linearly blends between.
     const CT_LOWER_PROFIT = 50000;
     const CT_UPPER_PROFIT = 250000;
     const CT_RATE_LOW = 0.19;
     const CT_RATE_HIGH = 0.25;
 
     function effectiveCorpRateFromProfit(profit) {
-      if (!isFinite(profit) || profit <= 0) return CT_RATE_LOW;
       if (profit <= CT_LOWER_PROFIT) return CT_RATE_LOW;
       if (profit >= CT_UPPER_PROFIT) return CT_RATE_HIGH;
       const t = (profit - CT_LOWER_PROFIT) / (CT_UPPER_PROFIT - CT_LOWER_PROFIT);
@@ -567,7 +468,6 @@
 
     function estimateProfitFromRate(ratePercent) {
       const r = ratePercent / 100;
-      if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
       if (r <= CT_RATE_LOW) return CT_LOWER_PROFIT;
       if (r >= CT_RATE_HIGH) return CT_UPPER_PROFIT;
       const t = (r - CT_RATE_LOW) / (CT_RATE_HIGH - CT_RATE_LOW);
@@ -575,77 +475,41 @@
     }
 
     function formatMoney(value) {
-  if (!isFinite(value)) return "£–";
-  return "£" + value.toLocaleString("en-GB", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-    function formatPercent(value) {
-      if (!isFinite(value)) return "–%";
-      return (value * 100).toFixed(1) + "%";
+      return "£" + value.toLocaleString("en-GB", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
-    // --- Item price helpers (currency formatting) ---
-
     function getPriceNumeric() {
-      const input = document.getElementById("price");
-      if (!input) return 0;
-      const raw = input.value || "";
-      const cleaned = raw.replace(/[^0-9.]/g, "");
-      const num = parseFloat(cleaned);
-      return isNaN(num) ? 0 : num;
+      const raw = document.getElementById("price").value.replace(/[^0-9.]/g, "");
+      return parseFloat(raw) || 0;
     }
 
     function formatPriceField() {
-      const input = document.getElementById("price");
-      if (!input) return;
       const num = getPriceNumeric();
-      if (!num) {
-        input.value = "";
-        return;
-      }
-
-      // Show commas, and only show decimals if needed
-      const hasDecimals = !Number.isInteger(num);
-      const options = hasDecimals
-        ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        : { minimumFractionDigits: 0, maximumFractionDigits: 0 };
-
-      input.value = num.toLocaleString("en-GB", options);
+      document.getElementById("price").value =
+        num ? num.toLocaleString("en-GB") : "";
     }
 
-    function populatePersonalTaxRates(extractionType) {
+    function populatePersonalTaxRates(type) {
       const select = document.getElementById("personalTaxRate");
-      select.innerHTML = ""; // clear existing options
+      select.innerHTML = "";
+      const list = type === "dividend" ? dividendRates : salaryRates;
 
-      const rates = extractionType === "dividend" ? dividendRates : salaryRates;
-
-      rates.forEach((rate, index) => {
+      list.forEach((r, i) => {
         const opt = document.createElement("option");
-        opt.value = rate.value;
-        opt.textContent = rate.label;
-
-        // Default selection
-        if (extractionType === "salary" && index === 0) {
-          opt.selected = true; // 20% salary
-        }
-        if (extractionType === "dividend" && index === 1) {
-          opt.selected = true; // 33.75% dividends
-        }
-
+        opt.value = r.value;
+        opt.textContent = r.label;
+        if ((type === "dividend" && i === 1) || (type === "salary" && i === 0))
+          opt.selected = true;
         select.appendChild(opt);
       });
     }
 
-    function updateNiVisibility(extractionType) {
-      const niField = document.getElementById("employeeNiField");
-      if (extractionType === "salary") {
-        niField.style.display = "flex";
-      } else {
-        niField.style.display = "none";
-      }
+    function updateNiVisibility(type) {
+      document.getElementById("employeeNiField").style.display =
+        type === "salary" ? "flex" : "none";
     }
 
     let isSyncingCorp = false;
@@ -654,21 +518,14 @@
       if (isSyncingCorp) return;
       isSyncingCorp = true;
 
-      const profitInput = document.getElementById("corpProfit");
-      const profitLabel = document.getElementById("corpProfitValue");
-      const profit = parseFloat(profitInput.value) || 0;
-
-      if (profitLabel) {
-        profitLabel.textContent = "£" + profit.toLocaleString();
-      }
+      const profit = parseFloat(document.getElementById("corpProfit").value);
+      document.getElementById("corpProfitValue").textContent =
+        "£" + profit.toLocaleString();
 
       const rate = effectiveCorpRateFromProfit(profit) * 100;
-
-      const slider = document.getElementById("corpTaxRate");
-      const display = document.getElementById("corpTaxRateDisplay");
-
-      slider.value = rate.toFixed(1);
-      display.textContent = rate.toFixed(1) + "%";
+      document.getElementById("corpTaxRate").value = rate.toFixed(1);
+      document.getElementById("corpTaxRateDisplay").textContent =
+        rate.toFixed(1) + "%";
 
       calculate();
       isSyncingCorp = false;
@@ -678,255 +535,144 @@
       if (isSyncingCorp) return;
       isSyncingCorp = true;
 
-      const slider = document.getElementById("corpTaxRate");
-      const display = document.getElementById("corpTaxRateDisplay");
-      const ratePercent = parseFloat(slider.value) || (CT_RATE_LOW * 100);
+      const rate = parseFloat(document.getElementById("corpTaxRate").value);
+      document.getElementById("corpTaxRateDisplay").textContent =
+        rate.toFixed(1) + "%";
 
-      display.textContent = ratePercent.toFixed(1) + "%";
+      let est = estimateProfitFromRate(rate);
+      est = Math.min(Math.max(est, 50000), 250000);
+      est = Math.round(est / 1000) * 1000;
 
-      const estProfit = estimateProfitFromRate(ratePercent);
-      const profitInput = document.getElementById("corpProfit");
-      const profitLabel = document.getElementById("corpProfitValue");
-
-      // Round to nearest £1k and clamp to slider range
-      let roundedProfit = Math.round(estProfit / 1000) * 1000;
-      roundedProfit = Math.min(Math.max(roundedProfit, 50000), 250000);
-
-      profitInput.value = roundedProfit;
-      if (profitLabel) {
-        profitLabel.textContent = "£" + roundedProfit.toLocaleString();
-      }
+      document.getElementById("corpProfit").value = est;
+      document.getElementById("corpProfitValue").textContent =
+        "£" + est.toLocaleString();
 
       calculate();
       isSyncingCorp = false;
     }
 
     function setDefaults() {
-      const priceInput = document.getElementById("price");
-      if (priceInput) {
-        priceInput.value = "1000";
-        formatPriceField();
-      }
-
-      const defaultProfit = 50000;
-      const profitInput = document.getElementById("corpProfit");
-      const profitLabel = document.getElementById("corpProfitValue");
-      profitInput.value = defaultProfit;
-      if (profitLabel) {
-        profitLabel.textContent = "£" + defaultProfit.toLocaleString();
-      }
-
-      const defaultRatePercent = CT_RATE_LOW * 100;
-      const slider = document.getElementById("corpTaxRate");
-      const display = document.getElementById("corpTaxRateDisplay");
-      slider.value = defaultRatePercent.toFixed(1);
-      display.textContent = defaultRatePercent.toFixed(1) + "%";
-
+      document.getElementById("price").value = "1,000";
+      document.getElementById("corpProfit").value = 50000;
+      document.getElementById("corpProfitValue").textContent = "£50,000";
+      document.getElementById("corpTaxRate").value = 19;
+      document.getElementById("corpTaxRateDisplay").textContent = "19.0%";
       document.getElementById("vatRate").value = "0.20";
       document.getElementById("vatOn").checked = true;
+
       document.getElementById("extractionType").value = "dividend";
       populatePersonalTaxRates("dividend");
-      document.getElementById("employeeNiRate").value = "0.08";
       updateNiVisibility("dividend");
       updateExtractionSegment("dividend");
     }
 
     function calculate() {
-      const priceInputNumeric = getPriceNumeric();
-      const corpTaxRate = (parseFloat(document.getElementById("corpTaxRate").value) || 0) / 100;
+      const price = getPriceNumeric();
+      const corpTaxRate = parseFloat(document.getElementById("corpTaxRate").value) / 100;
       const vatOn = document.getElementById("vatOn").checked;
-      const vatRate = parseFloat(document.getElementById("vatRate").value) || 0;
+      const vatRate = parseFloat(document.getElementById("vatRate").value);
+
       const extractionType = document.getElementById("extractionType").value;
-      const personalTaxRate = parseFloat(document.getElementById("personalTaxRate").value) || 0;
-      const employeeNiRate = extractionType === "salary"
-        ? parseFloat(document.getElementById("employeeNiRate").value) || 0
-        : 0;
+      const personalTaxRate = parseFloat(document.getElementById("personalTaxRate").value);
+      const employeeNiRate =
+        extractionType === "salary"
+          ? parseFloat(document.getElementById("employeeNiRate").value)
+          : 0;
 
-      // COMPANY COST:
-      let netPrice;
-      let grossPriceForPersonal = priceInputNumeric;
-
-      if (vatOn && vatRate > 0) {
-        netPrice = priceInputNumeric / (1 + vatRate);
-      } else {
-        netPrice = priceInputNumeric;
-      }
-
+      let netPrice = vatOn && vatRate > 0 ? price / (1 + vatRate) : price;
       const companyCost = netPrice * (1 - corpTaxRate);
 
-      // PERSONAL ROUTE:
-      const personalSpend = grossPriceForPersonal;
-
       let personalCost;
-      let warningText = "";
-      let breakdownText = "";
+      let warning = "";
+      let breakdown = "";
 
       if (extractionType === "dividend") {
         const denom = (1 - corpTaxRate) * (1 - personalTaxRate);
-        if (denom <= 0.05) {
-          warningText =
-            "Your selected Corporation Tax and dividend tax rates make personal extraction extremely inefficient. " +
-            "Check that the rates reflect your real marginal position.";
-        }
-        personalCost = denom > 0 ? personalSpend / denom : Infinity;
+        personalCost = price / denom;
 
-        if (denom > 0 && isFinite(personalCost)) {
-          const preTaxProfit = personalCost; // by construction
-          const corpTax = preTaxProfit * corpTaxRate;
-          const postTaxProfit = preTaxProfit - corpTax;
-          const grossDividend = postTaxProfit;
-          const dividendTax = grossDividend * personalTaxRate;
+        const corpTax = personalCost * corpTaxRate;
+        const dividendTax = (personalCost - corpTax) * personalTaxRate;
+        breakdown =
+          `Considers purchase price, ${formatMoney(corpTax)} in Corporation Tax and ` +
+          `${formatMoney(dividendTax)} in dividend tax.`;
 
-          breakdownText =
-            `Considers purchase price, ${formatMoney(corpTax)} in Corporation Tax and ` +
-            `${formatMoney(dividendTax)} in dividend tax `;
-        }
       } else {
         const denom = 1 - personalTaxRate - employeeNiRate;
-        if (denom <= 0.05) {
-          warningText =
-            "With this combination of income tax and NI, taking extra salary is extremely inefficient. " +
-            "Consider whether dividends or a different structure is more realistic.";
-        }
-        personalCost = denom > 0 ? personalSpend * (1 + EMPLOYER_NI_RATE) / denom : Infinity;
+        personalCost = price * (1 + EMPLOYER_NI_RATE) / denom;
 
-        if (denom > 0 && isFinite(personalCost)) {
-          const grossSalary = personalSpend / denom;
-          const incomeTax = grossSalary * personalTaxRate;
-          const employeeNI = grossSalary * employeeNiRate;
-          const employerNI = grossSalary * EMPLOYER_NI_RATE;
+        const grossSalary = price / denom;
+        const incomeTax = grossSalary * personalTaxRate;
+        const empNI = grossSalary * employeeNiRate;
+        const erNI = grossSalary * EMPLOYER_NI_RATE;
 
-          breakdownText =
-            `Considers purchase price, ${formatMoney(incomeTax)} in income tax, ` +
-            `${formatMoney(employeeNI)} in employee NI and ` +
-            `${formatMoney(employerNI)} in employer NI `;
-        }
+        breakdown =
+          `Considers purchase price, ${formatMoney(incomeTax)} in income tax, ` +
+          `${formatMoney(empNI)} in employee NI and ${formatMoney(erNI)} in employer NI.`;
       }
 
       const saving = personalCost - companyCost;
-      const savingPercent = personalCost > 0 ? saving / personalCost : 0;
+      const savingPercent = (saving / personalCost) * 100;
 
-      const companyCostEl = document.getElementById("companyCost");
-      const companyDetailsEl = document.getElementById("companyDetails");
-      const personalTotalEl = document.getElementById("personalTotal");
-      const personalBreakdownEl = document.getElementById("personalBreakdown");
-      const savingAmountEl = document.getElementById("savingAmount");
-      const savingDetailsEl = document.getElementById("savingDetails");
-      const resultsSummaryEl = document.getElementById("resultsSummary");
-      const warningEl = document.getElementById("warningText");
+      document.getElementById("companyCost").textContent =
+        formatMoney(companyCost);
 
-      companyCostEl.textContent = formatMoney(companyCost);
+      document.getElementById("companyDetails").textContent =
+        vatOn && vatRate > 0
+          ? `Assumes VAT at ${vatRate * 100}%, reclaimed by your company.`
+          : `No VAT reclaimed.`;
 
-      let vatText;
-      if (vatOn && vatRate > 0) {
-        vatText =
-          `Assumes the price you entered includes VAT at ${formatPercent(vatRate)}, which your company reclaims. `;
-      } else if (vatRate > 0) {
-        vatText =
-          `VAT is not reclaimed (either not applicable or not claimed). `;
+      document.getElementById("personalTotal").textContent =
+        formatMoney(personalCost);
+
+      document.getElementById("personalBreakdown").textContent = breakdown;
+
+      const summary = document.getElementById("resultsSummary");
+      summary.style.display = "block";
+
+      if (saving >= 0) {
+        summary.textContent =
+          `Using your limited company saves you ${formatMoney(saving)} on this purchase, ` +
+          `which is ${savingPercent.toFixed(1)}% of the overall cost compared to buying it personally.`;
+        summary.classList.remove("negative");
       } else {
-        vatText = "No VAT reclaimed or VAT not applicable. ";
-      }
-      let corpText = `Corporation Tax relief at ${formatPercent(corpTaxRate)} on the net cost.`;
-
-      companyDetailsEl.textContent = vatText + corpText;
-
-      personalTotalEl.textContent = formatMoney(personalCost);
-      personalBreakdownEl.textContent = breakdownText || "";
-
-      savingAmountEl.textContent = formatMoney(saving);
-      savingAmountEl.classList.remove("saving-positive", "saving-negative");
-      resultsSummaryEl.classList.remove("negative");
-      resultsSummaryEl.style.display = "block";
-
-      if (saving > 0.005) {
-        savingAmountEl.classList.add("saving-positive");
-        savingDetailsEl.textContent =
-          `Using the company is cheaper by ${formatMoney(saving)} ` +
-          `(${(savingPercent * 100).toFixed(1)}% of the overall cost if you buy it personally).`;
-        resultsSummaryEl.textContent =
-          `Using your limited company saves you ${formatMoney(saving)} on this purchase.`;
-      } else if (saving < -0.005) {
-        savingAmountEl.classList.add("saving-negative");
-        savingDetailsEl.textContent =
-          `Using the company is more expensive by ${formatMoney(-saving)} ` +
-          `(${(Math.abs(savingPercent) * 100).toFixed(1)}% more than buying personally).`;
-        resultsSummaryEl.textContent =
-          `In this scenario, buying personally is cheaper by ${formatMoney(-saving)}.`;
-        resultsSummaryEl.classList.add("negative");
-      } else {
-        savingDetailsEl.textContent = "No meaningful difference between the two options.";
-        resultsSummaryEl.textContent =
-          "There’s very little difference between company and personal in this scenario.";
-      }
-
-      if (warningText) {
-        warningEl.textContent = warningText;
-        warningEl.style.display = "block";
-      } else {
-        warningEl.style.display = "none";
+        summary.textContent =
+          `Buying personally is cheaper by ${formatMoney(-saving)} (${Math.abs(savingPercent).toFixed(1)}% difference).`;
+        summary.classList.add("negative");
       }
     }
 
-    // --- Segmented control for extraction type (dividends / salary) ---
-
-    function updateExtractionSegment(value) {
-      const buttons = document.querySelectorAll("#extractionSegment button");
-      buttons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.value === value);
-      });
+    function updateExtractionSegment(val) {
+      document.querySelectorAll("#extractionSegment button")
+        .forEach(btn => btn.classList.toggle("active", btn.dataset.value === val));
     }
 
     document.querySelectorAll("#extractionSegment button").forEach(btn => {
       btn.addEventListener("click", () => {
-        const value = btn.dataset.value;
-        const select = document.getElementById("extractionType");
-        select.value = value;
-
-        populatePersonalTaxRates(value);
-        updateNiVisibility(value);
-        updateExtractionSegment(value);
+        const val = btn.dataset.value;
+        document.getElementById("extractionType").value = val;
+        populatePersonalTaxRates(val);
+        updateNiVisibility(val);
+        updateExtractionSegment(val);
         calculate();
       });
     });
 
-    // Recalculate whenever main inputs change
-    document.querySelectorAll(
-      "#vatOn, #vatRate, #extractionType, #personalTaxRate, #employeeNiRate"
-    ).forEach(el => {
-      el.addEventListener("input", calculate);
-      el.addEventListener("change", calculate);
-    });
-
-    // VAT toggle
-    document.getElementById("vatOn").addEventListener("change", (e) => {
-      document.getElementById("vatRate").disabled = !e.target.checked;
-      calculate();
-    });
-
-    // Profit / CT rate sync via sliders
     document.getElementById("corpProfit").addEventListener("input", updateCorpRateFromProfit);
     document.getElementById("corpTaxRate").addEventListener("input", updateProfitFromCorpRate);
 
-    // Item price formatting
     document.getElementById("price").addEventListener("blur", () => {
       formatPriceField();
       calculate();
     });
 
-    document.getElementById("price").addEventListener("input", () => {
-      // Recalculate based on raw numeric value as user types
-      calculate();
-    });
+    document.getElementById("price").addEventListener("input", calculate);
 
-    // Reset button
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
       updateCorpRateFromProfit();
       calculate();
     });
 
-    // Initial setup
     window.addEventListener("load", () => {
       setDefaults();
       updateCorpRateFromProfit();
