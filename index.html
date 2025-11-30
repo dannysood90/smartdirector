@@ -243,20 +243,21 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: 6px;
+      margin-bottom: 6px;
     }
 
     .switch-label {
       font-size: 0.78rem;
-      font-style: italic;
       color: #6b7280;
     }
 
+    /* Rebuilt, smaller switch */
     .switch {
       position: relative;
       display: inline-block;
-      width: 90px;
-      height: 28px;
+      width: 44px;
+      height: 22px;
+      flex-shrink: 0;
     }
 
     .switch input {
@@ -265,26 +266,23 @@
       height: 0;
     }
 
-    .slider {
+    .switch .slider {
       position: absolute;
       cursor: pointer;
-      top: 2px;
-      left: 2px;
-      right: 2px;
-      bottom: 2px;
+      inset: 0;
       background-color: #e5e7eb;
       transition: 0.2s;
       border-radius: 999px;
     }
 
-    .slider:before {
+    .switch .slider:before {
       position: absolute;
       content: "";
-      height: 25px;
-      width: 25px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      top: 3px;
+      background-color: #ffffff;
       transition: 0.2s;
       border-radius: 50%;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
@@ -295,7 +293,7 @@
     }
 
     .switch input:checked + .slider:before {
-      transform: translateX(22px);
+      transform: translateX(18px);
     }
 
     .segmented {
@@ -316,7 +314,7 @@
       font-size: 0.85rem;
       cursor: pointer;
       color: #4b5563;
-      text-align: centre;
+      text-align: center;
     }
 
     .segmented button.active {
@@ -441,14 +439,13 @@
           </div>
 
           <div class="field">
-            <!-- VAT toggle moved above label + dropdown -->
             <div class="switch-row">
               <label class="switch">
                 <input type="checkbox" id="vatOn" checked />
                 <span class="slider"></span>
               </label>
               <span class="switch-label">
-                VAT applies and is included in the price you entered, AND your company can reclaim it.
+                VAT applies and is included in the price you entered, and your company can reclaim it.
               </span>
             </div>
 
