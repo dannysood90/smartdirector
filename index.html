@@ -613,13 +613,16 @@
     }
 
     function estimateProfitFromRate(ratePercent) {
-      const r = ratePercent / 100;
-      if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
-      if (r <= CT_RATE_LOW) return CT_LOWER_PROFIT;
-      if (r >= CT_RATE_HIGH) return CT_UPPER_PROFIT;
-      const t = (r - CT_RATE_LOW) / (CT_RATE_HIGH - CT_RATE_LOW);
-      return CT_LOWER_PROFIT + t * (CT_RATE_HIGH - CT_RATE_LOW);
-    }
+  const r = ratePercent; // work directly in % (19–25)
+
+  if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
+  if (r <= 19) return CT_LOWER_PROFIT;       // 19% → £50,000
+  if (r >= 25) return CT_UPPER_PROFIT;       // 25% → £250,000
+
+  // Linearly interpolate between 19% and 25%
+  const t = (r - 19) / (25 - 19);            // 0 at 19%, 1 at 25%
+  return CT_LOWER_PROFIT + t * (CT_UPPER_PROFIT - CT_LOWER_PROFIT);
+}
 
     function formatMoney(value) {
       if (!isFinite(value)) return "£–";
