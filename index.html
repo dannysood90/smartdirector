@@ -40,10 +40,21 @@
       box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
     }
 
+    /* Header row with centred title and right-aligned Learn more */
+    .header-row {
+      display: flex;
+      align-items: centre;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 0.6rem;
+    }
+
     h1 {
       font-size: 1.7rem;
       margin-top: 0;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0;
+      flex: 1;
+      text-align: centre;
     }
 
     .subtitle {
@@ -60,7 +71,7 @@
       font-size: 0.8rem;
       padding: 4px 10px;
       cursor: pointer;
-      margin-bottom: 0.6rem;
+      white-space: nowrap;
     }
 
     .learn-more-toggle:hover {
@@ -251,55 +262,53 @@
       color: #6b7280;
     }
 
-/* Clean iOS-style VAT toggle */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;   /* track width */
-  height: 22px;  /* track height */
-}
+    /* Clean iOS-style VAT toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 22px;
+    }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  margin: 0;
-}
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      margin: 0;
+    }
 
-.slider {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #e5e7eb;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e5e7eb;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
 
-/* thumb */
-.slider:before {
-  content: "";
-  position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 2px;   /* OFF = left */
-  top: 2px;
-  border-radius: 50%;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
-}
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      top: 2px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease;
+    }
 
-/* ON state */
-.switch input:checked + .slider {
-  background-color: #15803d;
-}
+    .switch input:checked + .slider {
+      background-color: #15803d;
+    }
 
-.switch input:checked + .slider:before {
-  transform: translateX(18px);  /* ON = right, still fully inside track */
-}
+    .switch input:checked + .slider:before {
+      transform: translateX(18px);
+    }
 
     .segmented {
       display: flex;
@@ -319,7 +328,7 @@
       font-size: 0.85rem;
       cursor: pointer;
       color: #4b5563;
-      text-align: center;
+      text-align: centre;
     }
 
     .segmented button.active {
@@ -407,11 +416,13 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>SmartDirector© Calculator</h1>
+      <div class="header-row">
+        <h1>SmartDirector© Calculator</h1>
+        <button class="learn-more-toggle" type="button" id="learnMoreToggle">
+          Learn more
+        </button>
+      </div>
 
-      <button class="learn-more-toggle" type="button" id="learnMoreToggle">
-        Learn more
-      </button>
       <div id="learnMorePanel" class="learn-more-panel">
         Made for Directors of UK Limited companies. Compare making a purchase through your company versus paying for it personally from your take-home income.
         Assumes you have already used your £12,570 personal tax-free allowance.
@@ -461,9 +472,9 @@
         </div>
       </div>
 
-      <!-- Company tax -->
+      <!-- Company tax details -->
       <div class="section-card">
-        <div class="section-title">Company Tax</div>
+        <div class="section-title">Company Tax Details</div>
         <div class="grid">
           <div class="field">
             <label for="corpProfit">Annual Profits</label>
@@ -505,7 +516,7 @@
 
       <!-- Personal Tax -->
       <div class="section-card">
-        <div class="section-title">Personal Tax</div>
+        <div class="section-title">Personal Tax Details</div>
         <div class="grid">
           <div class="field">
             <label>How would you pay yourself?</label>
@@ -522,7 +533,7 @@
           </div>
 
           <div class="field">
-            <label for="personalTaxRate">Tax rate</label>
+            <label for="personalTaxRate">Tax Rate</label>
             <select id="personalTaxRate"></select>
             <span class="info-inline">
               Your marginal tax rate on the dividends/salary used for this purchase.
@@ -599,7 +610,7 @@
       if (r <= CT_RATE_LOW) return CT_LOWER_PROFIT;
       if (r >= CT_RATE_HIGH) return CT_UPPER_PROFIT;
       const t = (r - CT_RATE_LOW) / (CT_RATE_HIGH - CT_RATE_LOW);
-      return CT_LOWER_PROFIT + t * (CT_UPPER_PROFIT - CT_LOWER_PROFIT);
+      return CT_LOWER_PROFIT + t * (CT_RATE_HIGH - CT_RATE_LOW);
     }
 
     function formatMoney(value) {
@@ -727,8 +738,8 @@
     function setDefaults() {
       const priceInput = document.getElementById("price");
       if (priceInput) {
-        priceInput.value = "1000";
-        formatPriceField();
+        // default now empty instead of £1,000
+        priceInput.value = "";
       }
 
       const defaultProfit = 50000;
