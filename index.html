@@ -43,7 +43,7 @@
     /* Header row with centred title and right-aligned Learn more */
     .header-row {
       display: flex;
-      align-items: centre;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 0.6rem;
@@ -54,7 +54,7 @@
       margin-top: 0;
       margin-bottom: 0;
       flex: 1;
-      text-align: centre;
+      text-align: center;
     }
 
     .subtitle {
@@ -328,7 +328,7 @@
       font-size: 0.85rem;
       cursor: pointer;
       color: #4b5563;
-      text-align: centre;
+      text-align: center;
     }
 
     .segmented button.active {
@@ -447,6 +447,7 @@
                 type="text"
                 inputmode="decimal"
                 autocomplete="off"
+                placeholder="e.g. 1,200"
               />
             </div>
           </div>
@@ -923,12 +924,56 @@
     document.getElementById("corpProfit").addEventListener("input", updateCorpRateFromProfit);
     document.getElementById("corpTaxRate").addEventListener("input", updateProfitFromCorpRate);
 
-    document.getElementById("price").addEventListener("blur", () => {
-      formatPriceField();
+    /* Item price: numeric only + formatting */
+    const priceInputEl = document.getElementById("price");
+
+    // Block letters and non-numeric keys
+    priceInputEl.addEventListener("keydown", (e) => {
+      const allowedKeys = [
+        "Backspace",
+        "Delete",
+        "Tab",
+        "Escape",
+        "Enter",
+        "ArrowLeft",
+        "ArrowRight",
+        "Home",
+        "End",
+      ];
+
+      if (
+        allowedKeys.includes(e.key) ||
+        ((e.ctrlKey || e.metaKey) &&
+          ["a", "c", "v", "x"].includes(e.key.toLowerCase()))
+      ) {
+        return;
+      }
+
+      // Allow digits, dot and comma
+      if (
+        (e.key >= "0" && e.key <= "9") ||
+        e.key === "." ||
+        e.key === ","
+      ) {
+        return;
+      }
+
+      // Block everything else (letters, symbols, etc.)
+      e.preventDefault();
+    });
+
+    // Clean pasted content + recalc
+    priceInputEl.addEventListener("input", (e) => {
+      const cleaned = e.target.value.replace(/[^\d.,]/g, "");
+      if (cleaned !== e.target.value) {
+        e.target.value = cleaned;
+      }
       calculate();
     });
 
-    document.getElementById("price").addEventListener("input", () => {
+    // On blur, format nicely with commas
+    priceInputEl.addEventListener("blur", () => {
+      formatPriceField();
       calculate();
     });
 
