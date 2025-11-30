@@ -103,6 +103,33 @@
       background: #eef2f7;
     }
 
+    /* Floating reset button */
+    .floating-reset {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #15803d;
+      color: #ffffff;
+      padding: 14px 18px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      z-index: 9999;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .floating-reset:hover {
+      background: #0f5f2b;
+      transform: translateY(-1px);
+    }
+
+    .floating-reset:active {
+      transform: translateY(1px);
+    }
+
     .section-card {
       background: #f9fafb;
       border-radius: 16px;
@@ -289,7 +316,7 @@
       font-size: 0.85rem;
       cursor: pointer;
       color: #4b5563;
-      text-align: center;
+      text-align: centre;
     }
 
     .segmented button.active {
@@ -386,10 +413,6 @@
         Compare making a purchase through your company versus paying for it personally from your take-home income.
         Made for Directors of UK Limited companies. Assumes you have already used your £12,570 personal tax-free
         allowance.
-      </div>
-
-      <div class="controls-header">
-        <button class="reset-btn" type="button" id="resetBtn">Reset to defaults</button>
       </div>
 
       <!-- Purchase details -->
@@ -540,6 +563,9 @@
       </p>
     </div>
   </div>
+
+  <!-- Floating reset button -->
+  <button id="resetBtn" class="floating-reset" type="button">↺ Reset</button>
 
   <script>
     const EMPLOYER_NI_RATE = 0.138;
@@ -751,7 +777,6 @@
       }
 
       const companyCost = netPrice * (1 - corpTaxRate);
-
       const personalSpend = grossPriceForPersonal;
 
       let personalCost;
