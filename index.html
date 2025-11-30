@@ -48,9 +48,33 @@
 
     .subtitle {
       margin-top: 0;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.6rem;
       color: #596172;
       font-size: 0.95rem;
+    }
+
+    .learn-more-toggle {
+      border-radius: 999px;
+      border: 1px solid #d0d5dd;
+      background: #f9fafb;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      cursor: pointer;
+      margin-bottom: 0.6rem;
+    }
+
+    .learn-more-toggle:hover {
+      background: #eef2f7;
+    }
+
+    .learn-more-panel {
+      display: none;
+      margin-bottom: 1rem;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f3f4f6;
+      font-size: 0.8rem;
+      color: #4b5563;
     }
 
     .controls-header {
@@ -78,8 +102,6 @@
     .reset-btn:hover {
       background: #eef2f7;
     }
-
-    /* SECTION CARDS (Item / Company / Personal) */
 
     .section-card {
       background: #f9fafb;
@@ -178,7 +200,7 @@
     input[type="range"] {
       width: 100%;
       cursor: pointer;
-      accent-color: #15803d; /* match your theme */
+      accent-color: #15803d;
     }
 
     .slider-wrap {
@@ -367,9 +389,17 @@
     <div class="card">
       <h1>Purchase Tax Advantage Calculator</h1>
       <p class="subtitle">
-        Compare making a purchase through your company versus paying for it personally from your take-home income.
-        Assumes you have already used your £12,570 personal tax-free allowance. 
+        See whether putting a purchase through your limited company is more tax-efficient than buying it personally.
       </p>
+
+      <button class="learn-more-toggle" type="button" id="learnMoreToggle">
+        Learn more
+      </button>
+      <div id="learnMorePanel" class="learn-more-panel">
+        Compare making a purchase through your company versus paying for it personally from your take-home income.
+        Made for Directors of UK Limited companies. Assumes you have already used your £12,570 personal tax-free
+        allowance.
+      </div>
 
       <div class="controls-header">
         <span class="muted">Adjust the assumptions to match your situation.</span>
@@ -384,7 +414,6 @@
             <label for="price">Item Price</label>
             <div class="inline-input">
               <span class="currency-prefix">£</span>
-              <!-- type="text" so we can show 1,000 etc -->
               <input
                 id="price"
                 class="price-input"
@@ -518,6 +547,7 @@
           <div class="result-value" id="personalTotal">£–</div>
           <div class="result-sub" id="personalBreakdown"></div>
         </div>
+      </div>
 
       <p class="disclaimer">
         This is a simplified calculator based on marginal UK tax and NI rates. It does not account for all edge cases
@@ -544,7 +574,6 @@
     ];
 
     // Simple approximation of effective Corporation Tax rate based on profit.
-    // Uses 19% up to £50k, 25% from £250k, and linearly blends between.
     const CT_LOWER_PROFIT = 50000;
     const CT_UPPER_PROFIT = 250000;
     const CT_RATE_LOW = 0.19;
@@ -568,12 +597,12 @@
     }
 
     function formatMoney(value) {
-  if (!isFinite(value)) return "£–";
-  return "£" + value.toLocaleString("en-GB", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
+      if (!isFinite(value)) return "£–";
+      return "£" + value.toLocaleString("en-GB", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
 
     function formatPercent(value) {
       if (!isFinite(value)) return "–%";
@@ -600,7 +629,6 @@
         return;
       }
 
-      // Show commas, and only show decimals if needed
       const hasDecimals = !Number.isInteger(num);
       const options = hasDecimals
         ? { minimumFractionDigits: 2, maximumFractionDigits: 2 }
@@ -611,7 +639,7 @@
 
     function populatePersonalTaxRates(extractionType) {
       const select = document.getElementById("personalTaxRate");
-      select.innerHTML = ""; // clear existing options
+      select.innerHTML = "";
 
       const rates = extractionType === "dividend" ? dividendRates : salaryRates;
 
@@ -620,7 +648,6 @@
         opt.value = rate.value;
         opt.textContent = rate.label;
 
-        // Default selection
         if (extractionType === "salary" && index === 0) {
           opt.selected = true; // 20% salary
         }
@@ -681,7 +708,6 @@
       const profitInput = document.getElementById("corpProfit");
       const profitLabel = document.getElementById("corpProfitValue");
 
-      // Round to nearest £1k and clamp to slider range
       let roundedProfit = Math.round(estProfit / 1000) * 1000;
       roundedProfit = Math.min(Math.max(roundedProfit, 50000), 250000);
 
@@ -764,7 +790,7 @@
         personalCost = denom > 0 ? personalSpend / denom : Infinity;
 
         if (denom > 0 && isFinite(personalCost)) {
-          const preTaxProfit = personalCost; // by construction
+          const preTaxProfit = personalCost;
           const corpTax = preTaxProfit * corpTaxRate;
           const postTaxProfit = preTaxProfit - corpTax;
           const grossDividend = postTaxProfit;
@@ -803,8 +829,6 @@
       const companyDetailsEl = document.getElementById("companyDetails");
       const personalTotalEl = document.getElementById("personalTotal");
       const personalBreakdownEl = document.getElementById("personalBreakdown");
-      const savingAmountEl = document.getElementById("savingAmount");
-      const savingDetailsEl = document.getElementById("savingDetails");
       const resultsSummaryEl = document.getElementById("resultsSummary");
       const warningEl = document.getElementById("warningText");
 
@@ -827,26 +851,19 @@
       personalTotalEl.textContent = formatMoney(personalCost);
       personalBreakdownEl.textContent = breakdownText || "";
 
-      savingAmountEl.textContent = formatMoney(saving);
-      savingAmountEl.classList.remove("saving-positive", "saving-negative");
       resultsSummaryEl.classList.remove("negative");
       resultsSummaryEl.style.display = "block";
 
       if (saving > 0.005) {
-        savingAmountEl.classList.add("saving-positive");
         resultsSummaryEl.textContent =
           `Using your limited company saves you ${formatMoney(saving)} on this purchase, ` +
           `which is ${(savingPercent * 100).toFixed(1)}% of the overall cost compared to buying it personally.`;
       } else if (saving < -0.005) {
-        savingAmountEl.classList.add("saving-negative");
-        savingDetailsEl.textContent =
-          `Using the company is more expensive by ${formatMoney(-saving)} ` +
-          `(${(Math.abs(savingPercent) * 100).toFixed(1)}% more than buying personally).`;
         resultsSummaryEl.textContent =
-          `In this scenario, buying personally is cheaper by ${formatMoney(-saving)}.`;
+          `In this scenario, buying personally is cheaper by ${formatMoney(-saving)} ` +
+          `(${(Math.abs(savingPercent) * 100).toFixed(1)}% difference).`;
         resultsSummaryEl.classList.add("negative");
       } else {
-        savingDetailsEl.textContent = "No meaningful difference between the two options.";
         resultsSummaryEl.textContent =
           "There’s very little difference between company and personal in this scenario.";
       }
@@ -906,7 +923,6 @@
     });
 
     document.getElementById("price").addEventListener("input", () => {
-      // Recalculate based on raw numeric value as user types
       calculate();
     });
 
@@ -915,6 +931,14 @@
       setDefaults();
       updateCorpRateFromProfit();
       calculate();
+    });
+
+    // Learn more toggle
+    document.getElementById("learnMoreToggle").addEventListener("click", () => {
+      const panel = document.getElementById("learnMorePanel");
+      const isVisible = panel.style.display === "block";
+      panel.style.display = isVisible ? "none" : "block";
+      document.getElementById("learnMoreToggle").textContent = isVisible ? "Learn more" : "Hide info";
     });
 
     // Initial setup
