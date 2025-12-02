@@ -50,19 +50,19 @@
     }
 
     h1 {
-  font-size: 1.7rem;
-  margin-top: 0;
-  margin-bottom: 0;
-  flex: 1;
-  text-align: centre;
-}
+      font-size: 1.7rem;
+      margin-top: 0;
+      margin-bottom: 0;
+      flex: 1;
+      text-align: center;
+    }
 
-/* Make title fit on smaller screens */
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.25rem;
-  }
-}
+    /* Make title fit on smaller screens */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.25rem;
+      }
+    }
 
     .subtitle {
       margin-top: 0;
@@ -565,7 +565,7 @@
       <div id="resultsSummary" class="results-summary" style="display:none;"></div>
       <div id="warningText" class="warning" style="display:none;"></div>
 
-      <div class="results">
+      <div class="results" id="resultsContainer">
         <div class="result-card">
           <div class="result-title">If the company buys it</div>
           <div class="result-value" id="companyCost">£–</div>
@@ -613,16 +613,16 @@
     }
 
     function estimateProfitFromRate(ratePercent) {
-  const r = ratePercent; // work directly in % (19–25)
+      const r = ratePercent; // work directly in % (19–25)
 
-  if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
-  if (r <= 19) return CT_LOWER_PROFIT;       // 19% → £50,000
-  if (r >= 25) return CT_UPPER_PROFIT;       // 25% → £250,000
+      if (!isFinite(r) || r <= 0) return CT_LOWER_PROFIT;
+      if (r <= 19) return CT_LOWER_PROFIT;       // 19% → £50,000
+      if (r >= 25) return CT_UPPER_PROFIT;       // 25% → £250,000
 
-  // Linearly interpolate between 19% and 25%
-  const t = (r - 19) / (25 - 19);            // 0 at 19%, 1 at 25%
-  return CT_LOWER_PROFIT + t * (CT_UPPER_PROFIT - CT_LOWER_PROFIT);
-}
+      // Linearly interpolate between 19% and 25%
+      const t = (r - 19) / (25 - 19);            // 0 at 19%, 1 at 25%
+      return CT_LOWER_PROFIT + t * (CT_UPPER_PROFIT - CT_LOWER_PROFIT);
+    }
 
     function formatMoney(value) {
       if (!isFinite(value)) return "£–";
@@ -778,6 +778,45 @@
 
     function calculate() {
       const priceInputNumeric = getPriceNumeric();
+
+      const resultsContainer    = document.getElementById("resultsContainer");
+      const resultsSummaryEl    = document.getElementById("resultsSummary");
+      const warningEl           = document.getElementById("warningText");
+      const companyCostEl       = document.getElementById("companyCost");
+      const companyDetailsEl    = document.getElementById("companyDetails");
+      const personalTotalEl     = document.getElementById("personalTotal");
+      const personalBreakdownEl = document.getElementById("personalBreakdown");
+
+      // If no item price, hide everything and stop
+      if (!priceInputNumeric || priceInputNumeric <= 0) {
+        if (resultsContainer) resultsContainer.style.display = "none";
+
+        if (resultsSummaryEl) {
+          resultsSummaryEl.style.display = "none";
+          resultsSummaryEl.textContent = "";
+          resultsSummaryEl.classList.remove("negative");
+        }
+
+        if (warningEl) {
+          warningEl.style.display = "none";
+          warningEl.textContent = "";
+        }
+
+        if (companyCostEl) companyCostEl.textContent = "£–";
+        if (companyDetailsEl) companyDetailsEl.textContent = "";
+        if (personalTotalEl) personalTotalEl.textContent = "£–";
+        if (personalBreakdownEl) personalBreakdownEl.textContent = "";
+
+        return;
+      }
+
+      // If we *do* have a price, show results
+      if (resultsContainer) resultsContainer.style.display = "grid";
+      if (resultsSummaryEl) {
+        resultsSummaryEl.style.display = "block";
+        resultsSummaryEl.classList.remove("negative");
+      }
+
       const corpTaxRate = (parseFloat(document.getElementById("corpTaxRate").value) || 0) / 100;
       const vatOn = document.getElementById("vatOn").checked;
       const vatRate = parseFloat(document.getElementById("vatRate").value) || 0;
@@ -848,13 +887,6 @@
       const saving = personalCost - companyCost;
       const savingPercent = personalCost > 0 ? saving / personalCost : 0;
 
-      const companyCostEl = document.getElementById("companyCost");
-      const companyDetailsEl = document.getElementById("companyDetails");
-      const personalTotalEl = document.getElementById("personalTotal");
-      const personalBreakdownEl = document.getElementById("personalBreakdown");
-      const resultsSummaryEl = document.getElementById("resultsSummary");
-      const warningEl = document.getElementById("warningText");
-
       companyCostEl.textContent = formatMoney(companyCost);
 
       let vatText;
@@ -867,7 +899,7 @@
       } else {
         vatText = "No VAT reclaimed or VAT not applicable. ";
       }
-      let corpText = `Corporation Tax relief at ${formatPercent(corpTaxRate)} on the net cost.`;
+      const corpText = `Corporation Tax relief at ${formatPercent(corpTaxRate)} on the net cost.`;
 
       companyDetailsEl.textContent = vatText + corpText;
 
@@ -875,7 +907,6 @@
       personalBreakdownEl.textContent = breakdownText || "";
 
       resultsSummaryEl.classList.remove("negative");
-      resultsSummaryEl.style.display = "block";
 
       if (saving > 0.005) {
         resultsSummaryEl.textContent =
@@ -937,7 +968,6 @@
     /* Item price: numeric only + formatting */
     const priceInputEl = document.getElementById("price");
 
-    // Block letters and non-numeric keys
     priceInputEl.addEventListener("keydown", (e) => {
       const allowedKeys = [
         "Backspace",
@@ -972,7 +1002,6 @@
       e.preventDefault();
     });
 
-    // Clean pasted content + recalc
     priceInputEl.addEventListener("input", (e) => {
       const cleaned = e.target.value.replace(/[^\d.,]/g, "");
       if (cleaned !== e.target.value) {
@@ -981,7 +1010,6 @@
       calculate();
     });
 
-    // On blur, format nicely with commas
     priceInputEl.addEventListener("blur", () => {
       formatPriceField();
       calculate();
